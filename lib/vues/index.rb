@@ -1,18 +1,19 @@
 module Vues
-  class Mapping
-    attr_reader :index, :fields
+  class Index
+    attr_reader :url, :name, :fields
 
-    def initialize(host, index)
-      @index = index
-      url = File.join(host, @index, '_mapping')
-      resp = RestClient.get(url)
+    def initialize(host, index_name)
+      @name = index_name
+      @url = File.join(host, index_name)
+
+      resp = RestClient.get(File.join(url, '_mapping'))
       @fields = parse_fields(resp.body)
     end
 
     def parse_fields(json)
       fields = []
 
-      JSON.parse(json)[index]['mappings']['_doc']['properties'].each_pair do |name, type|
+      JSON.parse(json)[name]['mappings']['_doc']['properties'].each_pair do |name, type|
         if type['type'] == 'keyword'
           fields << Keyword.new(name)
         end
@@ -47,7 +48,7 @@ module Vues
           name => {
             terms: {
               field: name,
-              size: 1000
+              size: 10
             }
           }
         }
