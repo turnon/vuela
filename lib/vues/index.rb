@@ -1,19 +1,16 @@
 module Vues
   class Index
-    attr_reader :url, :name, :fields
+    attr_reader :name, :fields
 
-    def initialize(host, index_name)
-      @name = index_name
-      @url = File.join(host, index_name)
-
-      resp = RestClient.get(File.join(url, '_mapping'))
-      @fields = parse_fields(resp.body)
+    def initialize(client)
+      @name = client.index
+      @fields = parse_fields client.get_mapping
     end
 
     def parse_fields(json)
       fields = []
 
-      JSON.parse(json)[name]['mappings']['_doc']['properties'].each_pair do |name, type|
+      json[name]['mappings']['_doc']['properties'].each_pair do |name, type|
         if type['type'] == 'keyword'
           fields << Keyword.new(name)
         end

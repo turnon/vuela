@@ -1,23 +1,16 @@
 module Vues
   class Search
 
-    attr_reader :url
+    attr_reader :client
 
-    def initialize(index)
-      @url = File.join(index.url, '_search')
-
-      resp = RestClient.get(url)
+    def initialize(client, index)
+      @client = client
       @query = Query.new(index.fields)
       @aggs = Aggs.new(index.fields)
     end
 
     def first_time
-      resp = RestClient::Request.execute(
-        method: :get, url: url,
-        payload: @aggs.generate.to_json, headers: {'Content-Type' => 'application/json'}
-      )
-
-      resp.body
+      client.search(body: @aggs.generate)
     end
 
     def generate
