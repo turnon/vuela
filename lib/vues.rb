@@ -1,18 +1,19 @@
 require 'vues/version'
+require 'vues/client'
 require 'vues/index'
 require 'vues/search'
-require 'rest-client'
 
 module Vues
   class Model
-    attr_reader :index
+    attr_reader :index, :client
 
     def initialize(host: ENV['VUES_HOST'], index: ENV['VUES_INDEX'])
-      @index = Index.new(host, index)
+      @client = Client.get(host, index)
+      @index = Index.new(client, index)
     end
 
     def first_statistic
-      search = Search.new(index)
+      search = Search.new(client, index)
       search.first_time
     end
   end
