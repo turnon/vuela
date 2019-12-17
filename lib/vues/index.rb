@@ -2,8 +2,8 @@ module Vues
   class Index
     attr_reader :name, :fields
 
-    def initialize(client, index_name)
-      @name = index_name
+    def initialize(client)
+      @name = client.index
       @fields = parse_fields client.get_mapping
     end
 

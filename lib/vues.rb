@@ -9,7 +9,7 @@ module Vues
 
     def initialize(host: ENV['VUES_HOST'], index: ENV['VUES_INDEX'])
       @client = Client.get(host, index)
-      @index = Index.new(client, index)
+      @index = Index.new(client)
     end
 
     def first_statistic
