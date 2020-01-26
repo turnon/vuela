@@ -16,7 +16,38 @@
 		}
 		return fields
 	}
-	
+
+	let aggs_maker = {
+		make(aggs, type, fields) {
+			let fn = this[type]
+			if (!fn) {
+				return
+			}
+			for (let field of fields) {
+				fn(aggs, field)
+			}
+		},
+		keyword(aggs, field) {
+			aggs[field] = {
+				"terms": {
+					"field": field,
+					"size": 1000
+				}
+			}
+		}
+	}
+
+	function make_aggs(props) {
+		let type_fields = group_by_type(props),
+			aggs = {}
+
+		for (let type of Object.keys(type_fields)) {
+			aggs_maker.make(aggs, type, type_fields[type])
+		}
+
+		return aggs
+	}
+
 	export default {
 		name: 'index',
 		data() {
@@ -27,12 +58,19 @@
 		methods: {
 			get_mapping() {
 				axios.get("/" + this.index + "/_mapping").then(res => {
-					// debugger
 					let properties = res.data[this.index]["mappings"]["_doc"]["properties"]
-					console.log(group_by_type(properties))
+					let aggs = make_aggs(properties)
+					debugger
+					return axios.post("/" + this.index + "/_search", {
+						aggs: aggs
+					})
+				}).then(res =>{
+					console.log(res.data)
 				})
 			}
 		}
 	}
 </script>
+
+<style>
 </style>
