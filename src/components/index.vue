@@ -1,75 +1,75 @@
 <template>
-	<div>
-		<input @keyup.13="get_mapping" v-model="index" />
-	</div>
+  <div>
+    <input @keyup.13="get_mapping" v-model="index" />
+  </div>
 </template>
 
 <script>
-	import axios from 'axios'
+  import axios from 'axios'
 
-	function group_by_type(props) {
-		let fields = {}
-		for (let field in props) {
-			let type = props[field]["type"]
-			fields[type] = fields[type] || []
-			fields[type].push(field)
-		}
-		return fields
-	}
+  function group_by_type(props) {
+    let fields = {}
+    for (let field in props) {
+      let type = props[field]["type"]
+      fields[type] = fields[type] || []
+      fields[type].push(field)
+    }
+    return fields
+  }
 
-	let aggs_maker = {
-		make(aggs, type, fields) {
-			let fn = this[type]
-			if (!fn) {
-				return
-			}
-			for (let field of fields) {
-				fn(aggs, field)
-			}
-		},
-		keyword(aggs, field) {
-			aggs[field] = {
-				"terms": {
-					"field": field,
-					"size": 1000
-				}
-			}
-		}
-	}
+  let aggs_maker = {
+    make(aggs, type, fields) {
+      let fn = this[type]
+      if (!fn) {
+        return
+      }
+      for (let field of fields) {
+        fn(aggs, field)
+      }
+    },
+    keyword(aggs, field) {
+      aggs[field] = {
+        "terms": {
+          "field": field,
+          "size": 1000
+        }
+      }
+    }
+  }
 
-	function make_aggs(props) {
-		let type_fields = group_by_type(props),
-			aggs = {}
+  function make_aggs(props) {
+    let type_fields = group_by_type(props),
+      aggs = {}
 
-		for (let type of Object.keys(type_fields)) {
-			aggs_maker.make(aggs, type, type_fields[type])
-		}
+    for (let type of Object.keys(type_fields)) {
+      aggs_maker.make(aggs, type, type_fields[type])
+    }
 
-		return aggs
-	}
+    return aggs
+  }
 
-	export default {
-		name: 'index',
-		data() {
-			return {
-				index: ""
-			}
-		},
-		methods: {
-			get_mapping() {
-				axios.get("/" + this.index + "/_mapping").then(res => {
-					let properties = res.data[this.index]["mappings"]["_doc"]["properties"]
-					let aggs = make_aggs(properties)
-					debugger
-					return axios.post("/" + this.index + "/_search", {
-						aggs: aggs
-					})
-				}).then(res =>{
-					console.log(res.data)
-				})
-			}
-		}
-	}
+  export default {
+    name: 'index',
+    data() {
+      return {
+        index: ""
+      }
+    },
+    methods: {
+      get_mapping() {
+        axios.get("/" + this.index + "/_mapping").then(res => {
+          let properties = res.data[this.index]["mappings"]["_doc"]["properties"]
+          let aggs = make_aggs(properties)
+          debugger
+          return axios.post("/" + this.index + "/_search", {
+            aggs: aggs
+          })
+        }).then(res => {
+          console.log(res.data)
+        })
+      }
+    }
+  }
 </script>
 
 <style>
