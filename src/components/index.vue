@@ -73,7 +73,7 @@
             new_aggs[field] = aggs[field]["buckets"]
           }
 
-          console.log(new_aggs)
+          this.$emit("refresh-aggs", new_aggs)
         })
       }
     }
