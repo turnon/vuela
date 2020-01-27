@@ -59,13 +59,21 @@
       get_mapping() {
         axios.get("/" + this.index + "/_mapping").then(res => {
           let properties = res.data[this.index]["mappings"]["_doc"]["properties"]
+          delete properties["id"]
+
           let aggs = make_aggs(properties)
-          debugger
           return axios.post("/" + this.index + "/_search", {
             aggs: aggs
           })
         }).then(res => {
-          console.log(res.data)
+          let new_aggs = {},
+            aggs = res.data["aggregations"]
+
+          for (let field of Object.keys(aggs)) {
+            new_aggs[field] = aggs[field]["buckets"]
+          }
+
+          console.log(new_aggs)
         })
       }
     }
