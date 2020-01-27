@@ -65,6 +65,8 @@
           return axios.post("/" + this.index + "/_search", {
             aggs: aggs
           })
+        }).catch(err => {
+          this.$emit("alarm", err.response)
         }).then(res => {
           let new_aggs = {},
             aggs = res.data["aggregations"]
