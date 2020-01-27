@@ -68,8 +68,7 @@
         axios.get("/" + this.index + "/_mapping").then(res => {
           let props_of_type = res.data[this.index]["mappings"][this.type]
           if (!props_of_type) {
-            this.$emit("alarm", "type " + this.type + " not found in index " + this.index)
-            return
+            throw "type " + this.type + " not found in index " + this.index
           }
 
           let properties = props_of_type["properties"]
@@ -79,8 +78,6 @@
           return axios.post("/" + this.index + "/_search", {
             aggs: aggs
           })
-        }).catch(err => {
-          this.$emit("alarm", err.response)
         }).then(res => {
           let new_aggs = {},
             aggs = res.data["aggregations"]
@@ -90,6 +87,9 @@
           }
 
           this.$emit("refresh-aggs", new_aggs)
+        }).catch(err => {
+          let msg = err.response || err
+          this.$emit("alarm", msg)
         })
       }
     }
