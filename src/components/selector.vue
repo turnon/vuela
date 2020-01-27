@@ -1,10 +1,21 @@
 <template>
   <div>
-    <ul v-for="(buckets, field) in aggs">
-      <li>
-        {{ field }} {{ selected[field] }}
-        <ul v-for="b in buckets">
-          <li @click="pick_or_drop(field, b)">{{ b.key }}({{ b.doc_count }})</li>
+    <ul>
+      <li v-for="(buckets, field) in aggs">
+        <span>{{ field }}</span>
+        <ul class="value-list picked-list">
+          <li v-for="value in selected[field]">
+            <span @click="pick_or_drop(field, value.bucket)" :class="value.picked ? 'picked' : 'dropped'">
+              {{ value.bucket.key }}({{ value.bucket.doc_count }})
+            </span>
+          </li>
+        </ul>
+        <ul class="value-list">
+          <li v-for="b in buckets">
+            <span @click="pick_or_drop(field, b)">
+              {{ b.key }}({{ b.doc_count }})
+            </span>
+          </li>
         </ul>
       </li>
     </ul>
@@ -40,12 +51,35 @@
             picked: true
           })
         }
-
-        console.log(field, b)
       }
     }
   }
 </script>
 
-<style>
+<style scoped>
+  .picked {
+    background-color: skyblue;
+  }
+
+  .dropped {
+    background-color: hotpink;
+  }
+
+  ul {
+    padding: 0;
+    overflow: auto;
+  }
+
+  ul.picked-list {
+    display: inline-block;
+  }
+
+  li {
+    list-style-type: none;
+  }
+
+  .value-list>li {
+    float: left;
+    margin: 1px 2px;
+  }
 </style>
