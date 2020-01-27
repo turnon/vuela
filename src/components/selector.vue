@@ -2,8 +2,8 @@
   <div>
     <ul>
       <li v-for="(buckets, field) in aggs">
+        <span @click="fold_or_expand(field)" class="fold-button">{{ expand[field] ? "-" : "+" }}</span>
         <span>{{ field }}</span>
-        <span @click="fold_or_expand(field)" class="fold-button">{{ fold[field] ? "+" : "-" }}</span>
 
         <ul class="value-list picked-list">
           <li v-for="value in selected[field]">
@@ -13,7 +13,7 @@
           </li>
         </ul>
 
-        <ul class="value-list" v-show="!fold[field]">
+        <ul class="value-list" v-show="expand[field]">
           <li v-for="b in buckets">
             <span @click="pick_or_drop(field, b)">
               {{ b.key }}({{ b.doc_count }})
@@ -32,23 +32,19 @@
     props: ['aggs'],
     data() {
       return {
-        fold: {},
+        expand: {},
         selected: {}
-      }
-    },
-    mounted() {
-      for (let field of Object.keys(this.aggs)) {
-        this.$set(this.fold, field, true)
       }
     },
     methods: {
       fold_or_expand(field) {
-        this.$set(this.fold, field, !this.fold[field])
+        this.$set(this.expand, field, !this.expand[field])
       },
       pick_or_drop(field, b) {
         if (!this.selected[field]) {
           this.$set(this.selected, field, {})
         }
+
         let values = this.selected[field],
           value = values[b.key]
 
