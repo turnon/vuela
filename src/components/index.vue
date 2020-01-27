@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input @keyup.13="get_mapping" v-model="index" />
+    <input @keyup.13="get_mapping" v-model="index_type" />
   </div>
 </template>
 
@@ -52,13 +52,27 @@
     name: 'index',
     data() {
       return {
-        index: ""
+        index_type: ""
+      }
+    },
+    computed: {
+      index() {
+        return this.index_type.replace(/\/.*/, '')
+      },
+      type() {
+        return this.index_type.indexOf('/') > 0 ? this.index_type.replace(/.*\//, '') : "_doc"
       }
     },
     methods: {
       get_mapping() {
         axios.get("/" + this.index + "/_mapping").then(res => {
-          let properties = res.data[this.index]["mappings"]["_doc"]["properties"]
+          let props_of_type = res.data[this.index]["mappings"][this.type]
+          if (!props_of_type) {
+            this.$emit("alarm", "type " + this.type + " not found in index " + this.index)
+            return
+          }
+
+          let properties = props_of_type["properties"]
           delete properties["id"]
 
           let aggs = make_aggs(properties)
