@@ -2,7 +2,7 @@
   <div id="app">
     <index @refresh-aggs="refresh_aggs" @alarm="make_alarm" />
     <alarm :msg="alarm_msg" />
-    <selector :aggs="aggs" />
+    <selector :aggs="aggs" @selected="refresh_query" />
   </div>
 </template>
 
@@ -16,6 +16,7 @@
     data() {
       return {
         alarm_msg: "",
+        query: {},
         aggs: {}
       }
     },
@@ -28,6 +29,10 @@
       refresh_aggs(aggs) {
         this.aggs = aggs
         this.alarm_msg = ""
+      },
+      refresh_query(body) {
+        this.query = body
+        console.log(JSON.stringify(body))
       },
       make_alarm(a) {
         this.aggs = {}

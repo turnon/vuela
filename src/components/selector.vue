@@ -27,6 +27,51 @@
 </template>
 
 <script>
+  function make_query_body(selected) {
+    let pick = {},
+      drop = {}
+
+    for (let field of Object.keys(selected)) {
+      for (let value of Object.values(selected[field])) {
+        if (value.picked) {
+          pick[field] = pick[field] || []
+          pick[field].push(value.bucket.key)
+        } else {
+          drop[field] = drop[field] || []
+          drop[field].push(value.bucket.key)
+        }
+      }
+    }
+
+    let must = [],
+      must_not = []
+    for (let field in pick) {
+      let condition = {}
+      condition[field + ".keyword"] = pick[field]
+      must.push({
+        terms: condition
+      })
+    }
+    for (let field in drop) {
+      let condition = {}
+      condition[field + ".keyword"] = drop[field]
+      must_not.push({
+        terms: condition
+      })
+    }
+
+    return {
+      bool: {
+        filter: [{
+          bool: {
+            must: must,
+            must_not: must_not
+          }
+        }]
+      }
+    }
+  }
+
   export default {
     name: 'selector',
     props: ['aggs'],
@@ -60,6 +105,8 @@
             picked: true
           })
         }
+
+        this.$emit("selected", make_query_body(this.selected))
       }
     }
   }
