@@ -42,7 +42,7 @@ let aggs_maker = {
 class Index {
   constructor(index_type) {
     this.index = index_type.replace(/\/.*/, '')
-    this.type = index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc",
+    this.type = index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc"
     this.index_type = this.index + "/" + this.type
   }
 
@@ -63,8 +63,11 @@ class Index {
   }
 
   async aggs_body() {
-    let properties = await this.mapping()
-    return aggs_maker.make_aggs(properties)
+    if (!this._aggs_body) {
+      let properties = await this.mapping()
+      this._aggs_body = aggs_maker.make_aggs(properties)
+    }
+    return this._aggs_body
   }
 
   async aggs_result() {
@@ -82,6 +85,15 @@ class Index {
     }
 
     return new_aggs
+  }
+
+  async search(query_body) {
+    let aggs_body = await this.aggs_body()
+    let result = await axios.post("/" + this.index_type + "/_search", {
+      query: query_body,
+      aggs: aggs_body
+    })
+    return result.data
   }
 }
 

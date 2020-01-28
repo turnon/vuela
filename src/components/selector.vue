@@ -47,14 +47,14 @@
       must_not = []
     for (let field in pick) {
       let condition = {}
-      condition[field + ".keyword"] = pick[field]
+      condition[field] = pick[field]
       must.push({
         terms: condition
       })
     }
     for (let field in drop) {
       let condition = {}
-      condition[field + ".keyword"] = drop[field]
+      condition[field] = drop[field]
       must_not.push({
         terms: condition
       })
