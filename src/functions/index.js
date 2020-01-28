@@ -48,35 +48,51 @@ let index_name_parser = {
   }
 }
 
-function get_mapping(index_type) {
-  let index = index_name_parser.index(index_type),
-    type = index_name_parser.type(index_type)
+class Index {
+  constructor(index_type) {
+    this.index_type = index_type
+  }
 
-  return axios.get("/" + index + "/_mapping").then(res => {
-    let props_of_type = res.data[index]["mappings"][type]
-    if (!props_of_type) {
-      throw "type " + type + " not found in index " + index
-    }
+  async mapping() {
+    let index = index_name_parser.index(this.index_type),
+      type = index_name_parser.type(this.index_type)
 
-    let properties = props_of_type["properties"]
-    delete properties["id"]
+    let m = await axios.get("/" + index + "/_mapping").then(res => {
+      let props_of_type = res.data[index]["mappings"][type]
+      if (!props_of_type) {
+        throw "type " + type + " not found in index " + index
+      }
 
-    let aggs = aggs_maker.make_aggs(properties)
-    return axios.post("/" + index + "/_search", {
-      aggs: aggs
+      let properties = props_of_type["properties"]
+      delete properties["id"]
+
+      return properties
     })
-  }).then(res => {
+
+    return m
+  }
+
+  async aggs_body() {
+    let properties = await this.mapping(this.index_type)
+    return aggs_maker.make_aggs(properties)
+  }
+
+  async aggs_result() {
+    let aggs_body = await this.aggs_body(this.index_type)
+
+    let result = await axios.post("/" + this.index_type + "/_search", {
+      aggs: aggs_body
+    })
+
     let new_aggs = {},
-      aggs = res.data["aggregations"]
+      aggs = result.data["aggregations"]
 
     for (let field of Object.keys(aggs)) {
       new_aggs[field] = aggs[field]["buckets"]
     }
 
     return new_aggs
-  })
+  }
 }
 
-export default {
-  get_mapping
-}
+export default Index

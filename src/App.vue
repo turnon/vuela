@@ -10,7 +10,7 @@
   import alarm from './components/alarm.vue'
   import selector from './components/selector.vue'
 
-  import mapping from './functions/mapping.js'
+  import Index from './functions/index.js'
 
   export default {
     name: 'app',
@@ -28,7 +28,8 @@
     },
     methods: {
       get_mapping() {
-        mapping.get_mapping(this.index_type).then(res => {
+        let idx = new Index(this.index_type)
+        idx.aggs_result(this.index_type).then(res => {
           this.alarm_msg = ""
           this.aggs = res
         }).catch(err => {
