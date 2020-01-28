@@ -1,42 +1,45 @@
 <template>
   <div id="app">
-    <index @refresh-aggs="refresh_aggs" @alarm="make_alarm" />
+    <input @keyup.13="get_mapping" v-model="index_type" />
     <alarm :msg="alarm_msg" />
     <selector :aggs="aggs" @selected="refresh_query" />
   </div>
 </template>
 
 <script>
-  import index from './components/index.vue'
   import alarm from './components/alarm.vue'
   import selector from './components/selector.vue'
+
+  import mapping from './functions/mapping.js'
 
   export default {
     name: 'app',
     data() {
       return {
+        index_type: "",
         alarm_msg: "",
         query: {},
         aggs: {}
       }
     },
     components: {
-      index,
       alarm,
       selector
     },
     methods: {
-      refresh_aggs(aggs) {
-        this.aggs = aggs
-        this.alarm_msg = ""
+      get_mapping() {
+        mapping.get_mapping(this.index_type).then(res => {
+          this.alarm_msg = ""
+          this.aggs = res
+        }).catch(err => {
+          let msg = err.response || err
+          this.alarm_msg = msg
+          this.aggs = {}
+        })
       },
       refresh_query(body) {
         this.query = body
         console.log(JSON.stringify(body))
-      },
-      make_alarm(a) {
-        this.aggs = {}
-        this.alarm_msg = a
       }
     }
   }
