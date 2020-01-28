@@ -39,28 +39,18 @@ let aggs_maker = {
   }
 }
 
-let index_name_parser = {
-  index(index_type) {
-    return index_type.replace(/\/.*/, '')
-  },
-  type(index_type) {
-    return index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc"
-  }
-}
-
 class Index {
   constructor(index_type) {
-    this.index_type = index_type
+    this.index = index_type.replace(/\/.*/, '')
+    this.type = index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc",
+    this.index_type = this.index + "/" + this.type
   }
 
   async mapping() {
-    let index = index_name_parser.index(this.index_type),
-      type = index_name_parser.type(this.index_type)
-
-    let m = await axios.get("/" + index + "/_mapping").then(res => {
-      let props_of_type = res.data[index]["mappings"][type]
+    let m = await axios.get("/" + this.index + "/_mapping").then(res => {
+      let props_of_type = res.data[this.index]["mappings"][this.type]
       if (!props_of_type) {
-        throw "type " + type + " not found in index " + index
+        throw "type " + type + " not found in index " + this.index
       }
 
       let properties = props_of_type["properties"]
@@ -73,12 +63,12 @@ class Index {
   }
 
   async aggs_body() {
-    let properties = await this.mapping(this.index_type)
+    let properties = await this.mapping()
     return aggs_maker.make_aggs(properties)
   }
 
   async aggs_result() {
-    let aggs_body = await this.aggs_body(this.index_type)
+    let aggs_body = await this.aggs_body()
 
     let result = await axios.post("/" + this.index_type + "/_search", {
       aggs: aggs_body
