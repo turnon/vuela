@@ -1,15 +1,23 @@
 <template>
   <div id="app">
-    <input @keyup.13="get_mapping" v-model="index_type" />
-    <button @click="submit_query">submit</button>
-    <alarm :msg="alarm_msg" />
-    <selector :aggs="aggs" @selected="refresh_query" />
+
+    <b-input-group>
+      <b-form-input @keyup.13="get_mapping" v-model="index_type" />
+      <b-input-group-append>
+        <b-button @click="submit_query">submit</b-button>
+      </b-input-group-append>
+    </b-input-group>
+
+    <b-alert class="mt-3" v-model="show_alarm">
+      {{ alarm_msg }}
+    </b-alert>
+
+    <selector :aggs="aggs" @selected="refresh_query" class="mt-3"/>
     <div>{{ result }}</div>
   </div>
 </template>
 
 <script>
-  import alarm from './components/alarm.vue'
   import selector from './components/selector.vue'
 
   import Index from './functions/index.js'
@@ -30,12 +38,14 @@
       }
     },
     components: {
-      alarm,
       selector
     },
     computed: {
       index() {
         return new Index(this.index_type)
+      },
+      show_alarm() {
+        return this.alarm_msg !== ""
       }
     },
 
