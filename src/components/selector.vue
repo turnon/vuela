@@ -1,32 +1,32 @@
 <template>
-  <div>
-    <ul>
-      <li v-for="(buckets, field) in aggs">
-        <span @click="fold_or_expand(field)" class="fold-button">{{ expand[field] ? "-" : "+" }}</span>
-        <span>{{ field }}</span>
+  <b-list-group>
+    <b-list-group-item v-for="(buckets, field) in aggs">
 
-        <ul class="value-list picked-list">
-          <li v-for="value in selected[field]">
-            <span @click="pick_or_drop(field, value.bucket)" :class="value.picked ? 'picked' : 'dropped'">
-              {{ value.bucket.key }}({{ value.bucket.doc_count }})
-            </span>
-          </li>
-        </ul>
+      <span v-b-toggle="'accordion-' + field">
+        <b-icon icon="chevron-right"></b-icon>{{ field }}
+      </span>
 
-        <ul class="value-list" v-show="expand[field]">
-          <li v-for="b in buckets">
-            <span @click="pick_or_drop(field, b)">
-              {{ b.key }}({{ b.doc_count }})
-            </span>
-          </li>
-        </ul>
+      <b-badge class="mr-1" :variant="value.picked ? 'success' : 'danger'" @click="pick_or_drop(value.bucket)" v-for="value in selected[field]">
+        {{ value.bucket.key }}({{ value.bucket.doc_count }})
+      </b-badge>
 
-      </li>
-    </ul>
-  </div>
+      <b-collapse :id="'accordion-' + field" accordion="my-accordion" class="choices">
+        <span class="choice mr-3" v-for="b in buckets" @click="pick_or_drop(b)">
+          {{ b.key }}({{ b.doc_count }})
+        </span>
+      </b-collapse>
+
+    </b-list-group-item>
+  </b-list-group>
 </template>
 
 <script>
+  import {
+    BIcon,
+    BIconChevronRight,
+    BIconChevronDown
+  } from 'bootstrap-vue'
+
   function make_query_body(selected) {
     let pick = {},
       drop = {}
@@ -81,11 +81,17 @@
         selected: {}
       }
     },
+    components: {
+      BIcon,
+      BIconChevronRight,
+      BIconChevronDown
+    },
     methods: {
       fold_or_expand(field) {
         this.$set(this.expand, field, !this.expand[field])
       },
-      pick_or_drop(field, b) {
+      pick_or_drop(b) {
+        let field = b.field
         if (!this.selected[field]) {
           this.$set(this.selected, field, {})
         }
@@ -113,29 +119,13 @@
 </script>
 
 <style scoped>
-  .picked {
-    background-color: skyblue;
+  .choices {
+    max-height: calc(30vh);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
-  .dropped {
-    background-color: hotpink;
-  }
-
-  ul {
-    padding: 0;
-    overflow: auto;
-  }
-
-  ul.picked-list {
-    display: inline-block;
-  }
-
-  li {
-    list-style-type: none;
-  }
-
-  .value-list>li {
-    display: inline;
-    margin: 1px 2px;
+  .choice {
+    word-break: keep-all;
   }
 </style>

@@ -12,7 +12,7 @@
       {{ alarm_msg }}
     </b-alert>
 
-    <selector :aggs="aggs" @selected="refresh_query" />
+    <selector :aggs="aggs" @selected="refresh_query" class="mt-3"/>
     <div>{{ result }}</div>
   </div>
 </template>

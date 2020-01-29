@@ -81,7 +81,10 @@ class Index {
       aggs = result.data["aggregations"]
 
     for (let field of Object.keys(aggs)) {
-      new_aggs[field] = aggs[field]["buckets"]
+      new_aggs[field] = aggs[field]["buckets"].map(b => {
+        b["field"] = field
+        return b
+      })
     }
 
     return new_aggs
