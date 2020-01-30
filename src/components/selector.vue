@@ -1,6 +1,6 @@
 <template>
   <b-list-group>
-    <b-list-group-item v-for="(buckets, field) in aggs">
+    <b-list-group-item v-for="(buckets, field) in $store.state.aggs">
 
       <span v-b-toggle="'accordion-' + field">
         <b-icon icon="chevron-right"></b-icon>{{ field }}

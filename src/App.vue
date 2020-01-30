@@ -9,7 +9,7 @@
     </b-input-group>
 
     <b-alert class="mt-3" v-model="show_alarm">
-      {{ alarm_msg }}
+      {{ $store.state.alarm }}
     </b-alert>
 
     <selector :aggs="aggs" @selected="refresh_query" class="mt-3" />
@@ -31,33 +31,25 @@
     data() {
       return {
         index_type: "",
-        alarm_msg: "",
         result: {},
         query: {},
-        aggs: {}
       }
     },
     components: {
       selector
     },
     computed: {
-      index() {
-        return new Es(this.index_type)
+      aggs(){
+        return this.$store.state.aggs
       },
       show_alarm() {
-        return this.alarm_msg !== ""
+        return this.$store.state.alarm !== undefined
       }
     },
 
     methods: {
       get_mapping() {
-        this.index.aggs_result(this.index_type).then(res => {
-          this.alarm_msg = ""
-          this.aggs = res
-        }).catch(err => {
-          this.alarm_msg = handle_err(err)
-          this.aggs = {}
-        })
+        this.$store.dispatch('change_index', this.index_type)
       },
 
       submit_query() {
