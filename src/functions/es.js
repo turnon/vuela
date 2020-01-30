@@ -39,7 +39,7 @@ let aggs_maker = {
   }
 }
 
-class Index {
+class Es {
   constructor(index_type) {
     this.index = index_type.replace(/\/.*/, '')
     this.type = index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc"
@@ -100,4 +100,4 @@ class Index {
   }
 }
 
-export default Index
+export default Es

@@ -12,7 +12,7 @@
       {{ alarm_msg }}
     </b-alert>
 
-    <selector :aggs="aggs" @selected="refresh_query" class="mt-3"/>
+    <selector :aggs="aggs" @selected="refresh_query" class="mt-3" />
     <div>{{ result }}</div>
   </div>
 </template>
@@ -20,7 +20,7 @@
 <script>
   import selector from './components/selector.vue'
 
-  import Index from './functions/index.js'
+  import Es from './functions/es.js'
 
   function handle_err(err) {
     return err.response || err
@@ -42,7 +42,7 @@
     },
     computed: {
       index() {
-        return new Index(this.index_type)
+        return new Es(this.index_type)
       },
       show_alarm() {
         return this.alarm_msg !== ""
