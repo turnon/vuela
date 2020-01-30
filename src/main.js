@@ -70,6 +70,12 @@ const store = new Vuex.Store({
     result: {}
   },
 
+  getters: {
+    has_alarm(state) {
+      return state.alarm !== null
+    }
+  },
+
   mutations: {
     refresh(state, new_state) {
       for (let key in new_state) {
