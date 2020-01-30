@@ -77,7 +77,6 @@
     props: ['aggs'],
     data() {
       return {
-        expand: {},
         selected: {}
       }
     },
@@ -87,9 +86,6 @@
       BIconChevronDown
     },
     methods: {
-      fold_or_expand(field) {
-        this.$set(this.expand, field, !this.expand[field])
-      },
       pick_or_drop(b) {
         let field = b.field
         if (!this.selected[field]) {
