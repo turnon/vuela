@@ -16,13 +16,60 @@ function handle_err(err) {
   return err.response || err
 }
 
+function make_query_body(selected) {
+  let pick = {},
+    drop = {}
+
+  for (let field of Object.keys(selected)) {
+    for (let value of Object.values(selected[field])) {
+      if (value.picked) {
+        pick[field] = pick[field] || []
+        pick[field].push(value.bucket.key)
+      } else {
+        drop[field] = drop[field] || []
+        drop[field].push(value.bucket.key)
+      }
+    }
+  }
+
+  let must = [],
+    must_not = []
+  for (let field in pick) {
+    let condition = {}
+    condition[field] = pick[field]
+    must.push({
+      terms: condition
+    })
+  }
+  for (let field in drop) {
+    let condition = {}
+    condition[field] = drop[field]
+    must_not.push({
+      terms: condition
+    })
+  }
+
+  return {
+    bool: {
+      filter: [{
+        bool: {
+          must: must,
+          must_not: must_not
+        }
+      }]
+    }
+  }
+}
+
 const store = new Vuex.Store({
   state: {
     es: null,
     alarm: null,
     selected: {},
     aggs: {},
+    result: {}
   },
+
   mutations: {
     refresh_es(state, es) {
       state.es = es
@@ -32,20 +79,54 @@ const store = new Vuex.Store({
     },
     refresh_aggs(state, aggs) {
       state.aggs = aggs
+    },
+    refresh_result(state, result) {
+      state.result = result
+    },
+    select(state, b) {
+      let field = b.field
+      if (!state.selected[field]) {
+        Vue.set(state.selected, field, {})
+      }
+
+      let values = state.selected[field],
+        value = values[b.key]
+
+      if (value) {
+        if (value.picked) {
+          value.picked = false
+        } else {
+          Vue.delete(values, b.key)
+        }
+      } else {
+        Vue.set(values, b.key, {
+          bucket: b,
+          picked: true
+        })
+      }
     }
   },
+
   actions: {
-    change_index({
-      commit
-    }, index) {
+    change_index(ctx, index) {
       let es = new Es(index)
-      commit('refresh_es', es)
+      ctx.commit('refresh_es', es)
       es.aggs_result().then(res => {
-        commit('refresh_aggs', res)
-        commit('refresh_alarm')
+        ctx.commit('refresh_aggs', res)
+        ctx.commit('refresh_alarm')
       }).catch(err => {
-        commit('refresh_aggs', {})
-        commit('refresh_alarm', handle_err(err))
+        ctx.commit('refresh_aggs', {})
+        ctx.commit('refresh_alarm', handle_err(err))
+      })
+    },
+
+    submit(ctx) {
+      state.es.search(make_query_body(ctx.state.selected)).then(res => {
+        ctx.commit('refresh_alarm')
+        ctx.commit('refresh_result', res)
+      }).catch(err => {
+        ctx.commit('refresh_alarm', handle_err(err))
+        ctx.commit('refresh_result', {})
       })
     }
   }

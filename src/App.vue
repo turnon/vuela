@@ -12,8 +12,8 @@
       {{ $store.state.alarm }}
     </b-alert>
 
-    <selector :aggs="aggs" @selected="refresh_query" class="mt-3" />
-    <div>{{ result }}</div>
+    <selector class="mt-3" />
+    <div>{{ $store.state.result }}</div>
   </div>
 </template>
 
@@ -31,17 +31,12 @@
     data() {
       return {
         index_type: "",
-        result: {},
-        query: {},
       }
     },
     components: {
       selector
     },
     computed: {
-      aggs(){
-        return this.$store.state.aggs
-      },
       show_alarm() {
         return this.$store.state.alarm !== undefined
       }
@@ -53,19 +48,8 @@
       },
 
       submit_query() {
-        this.index.search(this.query).then(res => {
-          this.alarm_msg = ""
-          this.result = res
-        }).catch(err => {
-          this.alarm_msg = handle_err(err)
-          this.result = {}
-        })
+        this.$store.dispatch('submit')
       },
-
-      refresh_query(body) {
-        this.query = body
-        console.log(JSON.stringify(body))
-      }
     }
   }
 </script>
