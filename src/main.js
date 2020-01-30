@@ -71,18 +71,12 @@ const store = new Vuex.Store({
   },
 
   mutations: {
-    refresh_es(state, es) {
-      state.es = es
+    refresh(state, new_state) {
+      for (let key in new_state) {
+        state[key] = new_state[key]
+      }
     },
-    refresh_alarm(state, alarm) {
-      state.alarm = alarm
-    },
-    refresh_aggs(state, aggs) {
-      state.aggs = aggs
-    },
-    refresh_result(state, result) {
-      state.result = result
-    },
+
     select(state, b) {
       let field = b.field
       if (!state.selected[field]) {
@@ -110,23 +104,34 @@ const store = new Vuex.Store({
   actions: {
     change_index(ctx, index) {
       let es = new Es(index)
-      ctx.commit('refresh_es', es)
+      ctx.commit('refresh', {
+        es: es
+      })
+
       es.aggs_result().then(res => {
-        ctx.commit('refresh_aggs', res)
-        ctx.commit('refresh_alarm')
+        ctx.commit('refresh', {
+          aggs: res,
+          alarm: null
+        })
       }).catch(err => {
-        ctx.commit('refresh_aggs', {})
-        ctx.commit('refresh_alarm', handle_err(err))
+        ctx.commit('refresh', {
+          aggs: {},
+          alarm: handle_err(err)
+        })
       })
     },
 
     submit(ctx) {
-      state.es.search(make_query_body(ctx.state.selected)).then(res => {
-        ctx.commit('refresh_alarm')
-        ctx.commit('refresh_result', res)
+      ctx.state.es.search(make_query_body(ctx.state.selected)).then(res => {
+        ctx.commit('refresh', {
+          result: res,
+          alarm: null
+        })
       }).catch(err => {
-        ctx.commit('refresh_alarm', handle_err(err))
-        ctx.commit('refresh_result', {})
+        ctx.commit('refresh', {
+          result: {},
+          alarm: handle_err(err)
+        })
       })
     }
   }

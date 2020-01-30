@@ -22,10 +22,6 @@
 
   import Es from './functions/es.js'
 
-  function handle_err(err) {
-    return err.response || err
-  }
-
   export default {
     name: 'app',
     data() {
@@ -38,7 +34,7 @@
     },
     computed: {
       show_alarm() {
-        return this.$store.state.alarm !== undefined
+        return this.$store.state.alarm !== null
       }
     },
 
