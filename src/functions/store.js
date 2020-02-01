@@ -65,6 +65,20 @@ export default new Vuex.Store({
   getters: {
     has_alarm(state) {
       return state.alarm !== null
+    },
+
+    flatten_selected(state) {
+      let selected = state.selected,
+        flatten = []
+
+      for (let field in selected) {
+        let key_picks = selected[field]
+        for (let key in key_picks) {
+          flatten.push(key_picks[key])
+        }
+      }
+
+      return flatten
     }
   },
 

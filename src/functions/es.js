@@ -92,7 +92,7 @@ class Es {
   }
 
   async search(query) {
-    return await basic_search({
+    return await this.basic_search({
       query
     })
   }

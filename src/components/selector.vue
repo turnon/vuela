@@ -1,26 +1,15 @@
 <template>
-  <!--  <b-list-group>
-    <b-list-group-item v-for="(buckets, field) in $store.state.aggs">
+  <div>
 
-      <span v-b-toggle="'accordion-' + field">
-        <b-icon icon="chevron-right"></b-icon>{{ field }}
-      </span>
+    <span class="selected-tag" v-for="s in $store.getters.flatten_selected" @click="pick_or_drop(s.bucket)">
+      <el-tag size="mini" :type="s.picked ? 'success' : 'danger'">
+        {{ s.bucket.label }}
+      </el-tag>
+    </span>
 
-      <b-badge class="mr-1" :variant="value.picked ? 'success' : 'danger'" @click="pick_or_drop(value.bucket)" v-for="value in $store.state.selected[field]">
-        {{ value.bucket.key }}({{ value.bucket.doc_count }})
-      </b-badge>
+    <el-tree :data="$store.state.aggs" :props="{children: 'children',label: 'label'}" accordion @node-click="pick_or_drop" />
 
-      <b-collapse :id="'accordion-' + field" accordion="my-accordion" class="choices">
-        <span class="choice mr-3" v-for="b in buckets" @click="pick_or_drop(b)">
-          {{ b.key }}({{ b.doc_count }})
-        </span>
-      </b-collapse>
-
-    </b-list-group-item>
-  </b-list-group> -->
-
-  <el-tree :data="$store.state.aggs" :props="{children: 'children',label: 'label'}" accordion />
-
+  </div>
 </template>
 
 <script>
@@ -28,6 +17,7 @@
     name: 'selector',
     methods: {
       pick_or_drop(b) {
+        if (b.children) return
         this.$store.commit("select", b)
       }
     }
@@ -35,4 +25,7 @@
 </script>
 
 <style>
+  .selected-tag {
+    margin: 0 .25rem 0 0
+  }
 </style>
