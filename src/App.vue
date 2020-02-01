@@ -1,18 +1,12 @@
 <template>
   <div id="app">
 
-    <b-input-group>
-      <b-form-input @keyup.13="get_mapping" v-model="index_type" />
-      <b-input-group-append>
-        <b-button @click="$store.dispatch('submit')">submit</b-button>
-      </b-input-group-append>
-    </b-input-group>
+    <el-input v-model="index_type" @change="get_mapping"/>
+    <el-button type="primary" @click="$store.dispatch('submit')">submit</el-button>
 
-    <b-alert class="mt-3" v-model="$store.getters.has_alarm">
-      {{ $store.state.alarm }}
-    </b-alert>
+    <el-alert type="error" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <selector class="mt-3" />
+    <!-- <selector class="mt-3" /> -->
     <div>{{ $store.state.result }}</div>
   </div>
 </template>

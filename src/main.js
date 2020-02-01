@@ -1,14 +1,12 @@
 import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 import App from './App.vue'
 import store from './functions/store.js'
 
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap-vue/dist/bootstrap-vue.css"
-
 Vue.config.productionTip = false
 
-Vue.use(BootstrapVue)
+Vue.use(ElementUI)
 
 new Vue({
   store,
