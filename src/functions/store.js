@@ -1,5 +1,8 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import Es from './es.js'
+
+Vue.use(Vuex)
 
 function handle_err(err) {
   return err.response || err
@@ -50,7 +53,7 @@ function make_query_body(selected) {
   }
 }
 
-export default {
+export default new Vuex.Store({
   state: {
     es: null,
     alarm: null,
@@ -130,4 +133,4 @@ export default {
       })
     }
   }
-}
+})
