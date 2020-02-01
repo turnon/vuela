@@ -6,7 +6,7 @@
 
     <el-alert type="error" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <!-- <selector class="mt-3" /> -->
+    <selector />
     <div>{{ $store.state.result }}</div>
   </div>
 </template>

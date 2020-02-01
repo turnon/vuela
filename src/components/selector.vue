@@ -1,5 +1,5 @@
 <template>
-  <b-list-group>
+  <!--  <b-list-group>
     <b-list-group-item v-for="(buckets, field) in $store.state.aggs">
 
       <span v-b-toggle="'accordion-' + field">
@@ -17,23 +17,15 @@
       </b-collapse>
 
     </b-list-group-item>
-  </b-list-group>
+  </b-list-group> -->
+
+  <el-tree :data="$store.state.aggs" :props="{children: 'children',label: 'label'}" accordion />
+
 </template>
 
 <script>
-  import {
-    BIcon,
-    BIconChevronRight,
-    BIconChevronDown
-  } from 'bootstrap-vue'
-
   export default {
     name: 'selector',
-    components: {
-      BIcon,
-      BIconChevronRight,
-      BIconChevronDown
-    },
     methods: {
       pick_or_drop(b) {
         this.$store.commit("select", b)
@@ -42,14 +34,5 @@
   }
 </script>
 
-<style scoped>
-  .choices {
-    max-height: calc(30vh);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .choice {
-    word-break: keep-all;
-  }
+<style>
 </style>
