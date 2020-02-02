@@ -58,7 +58,7 @@ export default new Vuex.Store({
     es: null,
     alarm: null,
     selected: {},
-    aggs: {},
+    aggs: [],
     result: {}
   },
 
