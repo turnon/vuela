@@ -7,7 +7,10 @@
       </el-tag>
     </span>
 
-    <el-tree :data="$store.state.aggs" :props="{children: 'children',label: 'label'}" accordion @node-click="pick_or_drop" />
+    <el-card shadow="never" style="margin-top: .25rem" body-style="padding: .5rem">
+      <el-tree :data="$store.state.aggs" :props="{children: 'children',label: 'label'}"
+        accordion @node-click="pick_or_drop" />
+    </el-card>
 
   </div>
 </template>
