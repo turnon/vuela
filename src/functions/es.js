@@ -78,7 +78,10 @@ class Es {
 
     for (let field in aggs) {
       let values = aggs[field]["buckets"].map(b => {
-        b["field"] = field
+        b["value"] = {
+          field: field,
+          value: b["key"]
+        }
         b["label"] = b["key"] + "(" + b["doc_count"] + ")"
         return b
       })
