@@ -1,26 +1,30 @@
 <template>
   <div id="app">
 
-    <b-input-group>
-      <b-form-input @keyup.13="get_mapping" v-model="index_type" />
-      <b-input-group-append>
-        <b-button @click="$store.dispatch('submit')">submit</b-button>
-      </b-input-group-append>
-    </b-input-group>
+    <el-input v-model="index_type" @change="get_mapping">
+      <el-button slot="append" icon="el-icon-search" @click="$store.dispatch('submit')" />
+    </el-input>
 
-    <b-alert class="mt-3" v-model="$store.getters.has_alarm">
-      {{ $store.state.alarm }}
-    </b-alert>
+    <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <selector class="mt-3" />
+    <selector style="margin-top: .25rem" />
+
     <div>{{ $store.state.result }}</div>
   </div>
 </template>
 
 <script>
+  import Vue from 'vue'
+  import {
+    Input,
+    Button,
+    Alert
+  } from 'element-ui'
   import selector from './components/selector.vue'
 
-  import Es from './functions/es.js'
+  Vue.use(Input)
+  Vue.use(Button)
+  Vue.use(Alert)
 
   export default {
     name: 'app',

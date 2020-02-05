@@ -1,55 +1,65 @@
 <template>
-  <b-list-group>
-    <b-list-group-item v-for="(buckets, field) in $store.state.aggs">
-
-      <span v-b-toggle="'accordion-' + field">
-        <b-icon icon="chevron-right"></b-icon>{{ field }}
-      </span>
-
-      <b-badge class="mr-1" :variant="value.picked ? 'success' : 'danger'" @click="pick_or_drop(value.bucket)" v-for="value in $store.state.selected[field]">
-        {{ value.bucket.key }}({{ value.bucket.doc_count }})
-      </b-badge>
-
-      <b-collapse :id="'accordion-' + field" accordion="my-accordion" class="choices">
-        <span class="choice mr-3" v-for="b in buckets" @click="pick_or_drop(b)">
-          {{ b.key }}({{ b.doc_count }})
-        </span>
-      </b-collapse>
-
-    </b-list-group-item>
-  </b-list-group>
+  <div class='ves-selector'>
+    <el-cascader v-model="picked" :options="$store.state.aggs" :props="{expandTrigger: 'hover', multiple: true}"
+      @change="handle_change"></el-cascader>
+  </div>
 </template>
 
 <script>
+  import Vue from 'vue'
   import {
-    BIcon,
-    BIconChevronRight,
-    BIconChevronDown
-  } from 'bootstrap-vue'
+    Cascader,
+    CascaderPanel
+  } from 'element-ui';
+  import {
+    isEmpty
+  } from 'element-ui/src/utils/util';
+
+  Vue.use(Cascader)
+
+  CascaderPanel.methods.syncActivePath = function() {
+    const {
+      store,
+      multiple,
+      activePath,
+      checkedValue
+    } = this;
+    if (!isEmpty(activePath)) {
+      const nodes = activePath.map(node => this.getNodeByValue(node.getValue()));
+      // Fix "Cannot read property 'level' of null"
+      // this.expandNodes(nodes);
+      if (!nodes.every(node => node === null)) {
+        this.expandNodes(nodes);
+      }
+    } else if (!isEmpty(checkedValue)) {
+      const value = multiple ? checkedValue[0] : checkedValue;
+      const checkedNode = this.getNodeByValue(value) || {};
+      const nodes = (checkedNode.pathNodes || []).slice(0, -1);
+      this.expandNodes(nodes);
+    } else {
+      this.activePath = [];
+      this.menus = [store.getNodes()];
+    }
+  }
 
   export default {
     name: 'selector',
-    components: {
-      BIcon,
-      BIconChevronRight,
-      BIconChevronDown
+    data() {
+      return {
+        picked: null
+      }
     },
     methods: {
-      pick_or_drop(b) {
-        this.$store.commit("select", b)
+      handle_change() {
+        let nodes = this.picked.map(arr => arr[1])
+        this.$store.commit("pick", nodes)
       }
     }
   }
 </script>
 
-<style scoped>
-  .choices {
-    max-height: calc(30vh);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .choice {
-    word-break: keep-all;
+<style>
+  .ves-selector .el-cascader {
+    width: 100%
   }
 </style>

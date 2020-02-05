@@ -71,32 +71,43 @@ class Es {
   }
 
   async aggs_result() {
-    let aggs_body = await this.aggs_body()
+    let result = await this.basic_search()
 
-    let result = await axios.post("/" + this.index_type + "/_search", {
-      aggs: aggs_body
-    })
-
-    let new_aggs = {},
+    let new_aggs = [],
       aggs = result.data["aggregations"]
 
-    for (let field of Object.keys(aggs)) {
-      new_aggs[field] = aggs[field]["buckets"].map(b => {
-        b["field"] = field
+    for (let field in aggs) {
+      let values = aggs[field]["buckets"].map(b => {
+        b["value"] = {
+          field: field,
+          value: b["key"]
+        }
+        b["label"] = b["key"] + "(" + b["doc_count"] + ")"
         return b
+      })
+      new_aggs.push({
+        label: field,
+        children: values
       })
     }
 
     return new_aggs
   }
 
-  async search(query_body) {
-    let aggs_body = await this.aggs_body()
-    let result = await axios.post("/" + this.index_type + "/_search", {
-      query: query_body,
-      aggs: aggs_body
+  async search(query) {
+    return await this.basic_search({
+      query
     })
-    return result.data
+  }
+
+  async basic_search(more) {
+    let q = {
+      aggs: await this.aggs_body()
+    }
+    if (more) {
+      Object.assign(q, more)
+    }
+    return await axios.post("/" + this.index_type + "/_search", q)
   }
 }
 
