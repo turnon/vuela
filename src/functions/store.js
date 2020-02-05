@@ -8,8 +8,8 @@ function handle_err(err) {
   return err.response ? JSON.stringify(err.response) : err
 }
 
-function construct_query_body(picked) {
-  let group_by_field = picked.reduce((group_by_field, node) => {
+function construct_conditions(options) {
+  let group_by_field = options.reduce((group_by_field, node) => {
     let group = group_by_field[node.field] || [];
     group.push(node.value);
     group_by_field[node.field] = group;
@@ -28,11 +28,16 @@ function construct_query_body(picked) {
     conditions.push(condition)
   }
 
+  return conditions
+}
+
+function construct_query_body(picked) {
   return {
     bool: {
       filter: [{
         bool: {
-          must: conditions
+          must: construct_conditions(picked.included),
+          must_not: construct_conditions(picked.excluded)
         }
       }]
     }
@@ -53,7 +58,7 @@ export default new Vuex.Store({
     has_alarm(state) {
       return state.alarm !== null
     },
-    has_aggs(state){
+    has_aggs(state) {
       return !!state.aggs.length
     }
   },

@@ -1,7 +1,8 @@
 <template>
-  <div class='ves-selector'>
-    <el-cascader v-if="$store.getters.has_aggs" v-model="picked" :options="$store.state.aggs" :props="{expandTrigger: 'hover', multiple: true}"
-      @change="handle_change"></el-cascader>
+  <div class='ves-selector' v-if="$store.getters.has_aggs">
+    <el-cascader placeholder="include" v-model="included" :options="$store.state.aggs" :props="props"  @change="handle_change" />
+    <el-cascader placeholder="exclude" v-model="excluded" :options="$store.state.aggs" :props="props"  @change="handle_change"
+      style="margin-top: .25rem" />
   </div>
 </template>
 
@@ -46,13 +47,20 @@
     name: 'selector',
     data() {
       return {
-        picked: null
+        props: {
+          expandTrigger: 'hover',
+          multiple: true
+        },
+        included: [],
+        excluded: []
       }
     },
     methods: {
       handle_change() {
-        let nodes = this.picked.map(arr => arr[1])
-        this.$store.commit("pick", nodes)
+        this.$store.commit("pick", {
+          included: this.included.map(arr => arr[1]),
+          excluded: this.excluded.map(arr => arr[1])
+        })
       }
     }
   }
