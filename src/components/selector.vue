@@ -6,12 +6,16 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import {
+    Cascader,
     CascaderPanel
   } from 'element-ui';
   import {
     isEmpty
   } from 'element-ui/src/utils/util';
+
+  Vue.use(Cascader)
 
   CascaderPanel.methods.syncActivePath = function() {
     const {

@@ -14,9 +14,17 @@
 </template>
 
 <script>
+  import Vue from 'vue'
+  import {
+    Input,
+    Button,
+    Alert
+  } from 'element-ui'
   import selector from './components/selector.vue'
 
-  import Es from './functions/es.js'
+  Vue.use(Input)
+  Vue.use(Button)
+  Vue.use(Alert)
 
   export default {
     name: 'app',
