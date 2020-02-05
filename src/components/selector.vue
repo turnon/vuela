@@ -1,6 +1,6 @@
 <template>
   <div class='ves-selector'>
-    <el-cascader v-model="picked" :options="$store.state.aggs" :props="{expandTrigger: 'hover', multiple: true}"
+    <el-cascader v-if="$store.getters.has_aggs" v-model="picked" :options="$store.state.aggs" :props="{expandTrigger: 'hover', multiple: true}"
       @change="handle_change"></el-cascader>
   </div>
 </template>

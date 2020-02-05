@@ -5,7 +5,7 @@ import Es from './es.js'
 Vue.use(Vuex)
 
 function handle_err(err) {
-  return err.response || err
+  return err.response ? JSON.stringify(err.response) : err
 }
 
 function construct_query_body(picked) {
@@ -53,6 +53,9 @@ export default new Vuex.Store({
     has_alarm(state) {
       return state.alarm !== null
     },
+    has_aggs(state){
+      return !!state.aggs.length
+    }
   },
 
   mutations: {
@@ -81,7 +84,7 @@ export default new Vuex.Store({
         })
       }).catch(err => {
         ctx.commit('refresh', {
-          aggs: {},
+          aggs: [],
           alarm: handle_err(err)
         })
       })
