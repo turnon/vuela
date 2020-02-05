@@ -1,8 +1,12 @@
 <template>
   <div class='ves-selector' v-if="$store.getters.has_aggs">
-    <el-cascader placeholder="include" v-model="included" :options="$store.state.aggs" :props="props"  @change="handle_change" />
-    <el-cascader placeholder="exclude" v-model="excluded" :options="$store.state.aggs" :props="props"  @change="handle_change"
-      style="margin-top: .25rem" />
+    <div class="include">
+      <el-cascader placeholder="include" v-model="included" :options="$store.state.aggs" :props="props" @change="handle_change" />
+    </div>
+    <div class="exclude">
+      <el-cascader placeholder="exclude" v-model="excluded" :options="$store.state.aggs" :props="props" @change="handle_change"
+        style="margin-top: .25rem" />
+    </div>
   </div>
 </template>
 
@@ -69,5 +73,25 @@
 <style>
   .ves-selector .el-cascader {
     width: 100%
+  }
+
+  .include .el-cascader__tags .el-tag {
+    color: #67c23a;
+    background: #f0f9eb;
+    border-color: #c2e7b0;
+  }
+
+  .include .el-cascader__tags .el-tag .el-icon-close {
+    background-color: #5daf34;
+  }
+
+  .exclude .el-cascader__tags .el-tag {
+    color: #f56c6c;
+    background: #fef0f0;
+    border-color: #fbc4c4;
+  }
+
+  .exclude .el-cascader__tags .el-tag .el-icon-close {
+    background-color: #f56c6c;
   }
 </style>

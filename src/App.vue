@@ -7,7 +7,7 @@
 
     <selector style="margin-top: .25rem" />
 
-    <el-button type="success" plain style="margin-top: .25rem; width: 100%;" v-if="$store.getters.has_aggs" @click="$store.dispatch('submit')">submit</el-button>
+    <el-button type="primary" plain style="margin-top: .25rem; width: 100%;" v-if="$store.getters.has_aggs" @click="$store.dispatch('submit')">submit</el-button>
 
     <div>{{ $store.state.result }}</div>
   </div>
