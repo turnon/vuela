@@ -1,13 +1,13 @@
 <template>
   <div id="app">
 
-    <el-input v-model="index_type" @change="get_mapping">
-      <el-button slot="append" icon="el-icon-search" @click="$store.dispatch('submit')" />
-    </el-input>
+    <el-input v-model="index_type" @change="get_mapping" />
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
     <selector style="margin-top: .25rem" />
+
+    <el-button type="success" plain style="margin-top: .25rem; width: 100%;" v-if="$store.getters.has_aggs" @click="$store.dispatch('submit')">submit</el-button>
 
     <div>{{ $store.state.result }}</div>
   </div>
