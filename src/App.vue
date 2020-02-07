@@ -15,18 +15,23 @@
 
 <script>
   import Vue from 'vue'
+
   import {
     Input,
     Button,
     Alert
   } from 'element-ui'
+  import 'element-ui/lib/theme-chalk/index.css';
+
   import selector from './components/selector.vue'
+  import store from './functions/store.js'
 
   Vue.use(Input)
   Vue.use(Button)
   Vue.use(Alert)
 
   export default {
+    store,
     name: 'app',
     data() {
       return {
