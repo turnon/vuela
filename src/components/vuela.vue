@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-select v-model="index_type" placeholder="index" style="width: 100%" @change="get_mapping">
-      <el-option v-for="(es, idx) in $store.state.ess" :key="idx" :label="idx" :value="idx" />
+    <el-select v-model="index_type" placeholder="index" style="width: 100%" @change="change_index">
+      <el-option v-for="(es, idx) in $store.state.name_indexes" :key="idx" :label="idx" :value="idx" />
     </el-select>
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
@@ -53,7 +53,7 @@
     },
 
     methods: {
-      get_mapping() {
+      change_index() {
         this.$store.dispatch('change_index', this.index_type)
       },
     }

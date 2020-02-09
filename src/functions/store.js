@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import load_mappings from './mapping.js'
-import Es from './es.js'
 
 Vue.use(Vuex)
 
@@ -47,10 +46,9 @@ function construct_query_body(picked) {
 
 export default new Vuex.Store({
   state: {
-    ess: {},
-    es: null,
+    name_indexes: {},
+    current_index: null,
     alarm: null,
-    selected: {},
     picked: [],
     aggs: [],
     result: {}
@@ -81,24 +79,24 @@ export default new Vuex.Store({
     load_indexes(ctx) {
       load_mappings().then(mappings => {
         ctx.commit('refresh', {
-          ess: mappings,
+          name_indexes: mappings,
           alarm: null
         })
       }).catch(err => {
         ctx.commit('refresh', {
-          ess: {},
+          name_indexes: {},
           alarm: handle_err(err)
         })
       })
     },
 
     change_index(ctx, index) {
-      let es = ctx.state.ess[index]
+      let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
-        es: es
+        current_index: idx
       })
 
-      es.aggs_result().then(res => {
+      idx.aggs_result().then(res => {
         ctx.commit('refresh', {
           aggs: res,
           alarm: null
@@ -112,7 +110,7 @@ export default new Vuex.Store({
     },
 
     submit(ctx) {
-      ctx.state.es.search(construct_query_body(ctx.state.picked)).then(res => {
+      ctx.state.current_index.search(construct_query_body(ctx.state.picked)).then(res => {
         ctx.commit('refresh', {
           result: res,
           alarm: null

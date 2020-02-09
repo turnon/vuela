@@ -1,5 +1,5 @@
 import axios from "axios"
-import Es from "./es.js"
+import Idx from "./idx.js"
 
 async function load_mappings() {
   let indexes = {}
@@ -9,8 +9,8 @@ async function load_mappings() {
       for (let type in mappings) {
         let props = mappings[type]['properties']
         delete props["id"]
-        let es = new Es(index, type, props)
-        indexes[es.index_type] = es
+        let idx = new Idx(index, type, props)
+        indexes[idx.index_type] = idx
       }
     }
   })

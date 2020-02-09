@@ -39,7 +39,7 @@ let aggs_maker = {
   }
 }
 
-class Es {
+class Idx {
   constructor(index, type, props) {
     this.index = index
     this.type = type
@@ -95,4 +95,4 @@ class Es {
   }
 }
 
-export default Es
+export default Idx
