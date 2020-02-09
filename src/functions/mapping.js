@@ -3,7 +3,8 @@ import Idx from "./idx.js"
 
 async function load_mappings(options) {
   let indexes = {}
-  await axios.get("/_mapping").then(res => {
+  let path = options.namespace ? `/${options.namespace}/_mapping` : "/_mapping"
+  await axios.get(path).then(res => {
     for (let index in res.data) {
       let mappings = res.data[index]['mappings']
       for (let type in mappings) {

@@ -103,7 +103,9 @@ class Idx {
     if (more) {
       Object.assign(q, more)
     }
-    return await axios.post("/" + this.index_type + "/_search", q)
+    let path = `/${this.index_type}/_search`
+    path = this.options.namespace ? `/${this.options.namespace}${path}` : path
+    return await axios.post(path, q)
   }
 }
 

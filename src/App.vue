@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <vuela :options="{aggs_keyword_size: 100}" @result="handle_result" />
+    <vuela :options="{namespace: 'es_backend',aggs_keyword_size: 100}" @result="handle_result" />
     <div>{{ result }}</div>
   </div>
 </template>
