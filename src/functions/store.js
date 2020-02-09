@@ -1,14 +1,19 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import Es from './es.js'
+import load_mappings from './mapping.js'
 
 Vue.use(Vuex)
 
 function handle_err(err) {
+  console.error(err)
   return err.response ? JSON.stringify(err.response) : err
 }
 
 function construct_conditions(options) {
+  if (!options) {
+    return []
+  }
+
   let group_by_field = options.reduce((group_by_field, node) => {
     let group = group_by_field[node.field] || [];
     group.push(node.value);
@@ -46,10 +51,10 @@ function construct_query_body(picked) {
 
 export default new Vuex.Store({
   state: {
-    es: null,
+    name_indexes: {},
+    current_index: null,
     alarm: null,
-    selected: {},
-    picked: [],
+    picked: {},
     aggs: [],
     result: {}
   },
@@ -76,13 +81,31 @@ export default new Vuex.Store({
   },
 
   actions: {
+    load_indexes(ctx, options) {
+      load_mappings(options).then(mappings => {
+        ctx.commit('refresh', {
+          name_indexes: mappings,
+          alarm: null
+        })
+      }).catch(err => {
+        ctx.commit('refresh', {
+          name_indexes: {},
+          alarm: handle_err(err)
+        })
+      })
+    },
+
     change_index(ctx, index) {
-      let es = new Es(index)
+      let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
-        es: es
+        alarm: null,
+        picked: {},
+        aggs: [],
+        result: {},
+        current_index: idx
       })
 
-      es.aggs_result().then(res => {
+      idx.aggs_result().then(res => {
         ctx.commit('refresh', {
           aggs: res,
           alarm: null
@@ -96,7 +119,7 @@ export default new Vuex.Store({
     },
 
     submit(ctx) {
-      ctx.state.es.search(construct_query_body(ctx.state.picked)).then(res => {
+      ctx.state.current_index.search(construct_query_body(ctx.state.picked)).then(res => {
         ctx.commit('refresh', {
           result: res,
           alarm: null

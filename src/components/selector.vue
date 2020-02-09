@@ -58,6 +58,14 @@
         excluded: []
       }
     },
+
+    watch: {
+      "$store.state.current_index": function() {
+        this.included = []
+        this.excluded = []
+      }
+    },
+
     methods: {
       handle_change() {
         this.$store.commit("pick", {

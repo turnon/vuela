@@ -1,6 +1,10 @@
 import axios from "axios"
 
-let aggs_maker = {
+class AggsMaker {
+  constructor(options) {
+    this.options = options
+  }
+
   make_aggs(props) {
     let type_fields = this.group_by_type(props),
       aggs = {}
@@ -10,7 +14,8 @@ let aggs_maker = {
     }
 
     return aggs
-  },
+  }
+
   group_by_type(props) {
     let fields = {}
     for (let field in props) {
@@ -19,53 +24,44 @@ let aggs_maker = {
       fields[type].push(field)
     }
     return fields
-  },
+  }
+
   make(aggs, type, fields) {
     let fn = this[type]
     if (!fn) {
       return
     }
+    fn = fn.bind(this)
     for (let field of fields) {
       fn(aggs, field)
     }
-  },
+  }
+
   keyword(aggs, field) {
+    let size = this.options.aggs_keyword_size || 10
     aggs[field] = {
       "terms": {
         "field": field,
-        "size": 1000
+        "size": size
       }
     }
   }
+
 }
 
-class Es {
-  constructor(index_type) {
-    this.index = index_type.replace(/\/.*/, '')
-    this.type = index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc"
+class Idx {
+  constructor(index, type, props, options) {
+    this.index = index
+    this.type = type
     this.index_type = this.index + "/" + this.type
+    this.props = props
+    this.options = options || {}
+    this.aggs_maker = new AggsMaker(this.options)
   }
 
-  async mapping() {
-    let m = await axios.get("/" + this.index + "/_mapping").then(res => {
-      let props_of_type = res.data[this.index]["mappings"][this.type]
-      if (!props_of_type) {
-        throw "type " + type + " not found in index " + this.index
-      }
-
-      let properties = props_of_type["properties"]
-      delete properties["id"]
-
-      return properties
-    })
-
-    return m
-  }
-
-  async aggs_body() {
+  aggs_body() {
     if (!this._aggs_body) {
-      let properties = await this.mapping()
-      this._aggs_body = aggs_maker.make_aggs(properties)
+      this._aggs_body = this.aggs_maker.make_aggs(this.props)
     }
     return this._aggs_body
   }
@@ -102,7 +98,7 @@ class Es {
 
   async basic_search(more) {
     let q = {
-      aggs: await this.aggs_body()
+      aggs: this.aggs_body()
     }
     if (more) {
       Object.assign(q, more)
@@ -111,4 +107,4 @@ class Es {
   }
 }
 
-export default Es
+export default Idx
