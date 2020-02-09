@@ -1,6 +1,10 @@
 import axios from "axios"
 
-let aggs_maker = {
+class AggsMaker {
+  constructor(options) {
+    this.options = options
+  }
+
   make_aggs(props) {
     let type_fields = this.group_by_type(props),
       aggs = {}
@@ -10,7 +14,8 @@ let aggs_maker = {
     }
 
     return aggs
-  },
+  }
+
   group_by_type(props) {
     let fields = {}
     for (let field in props) {
@@ -19,37 +24,44 @@ let aggs_maker = {
       fields[type].push(field)
     }
     return fields
-  },
+  }
+
   make(aggs, type, fields) {
     let fn = this[type]
     if (!fn) {
       return
     }
+    fn = fn.bind(this)
     for (let field of fields) {
       fn(aggs, field)
     }
-  },
+  }
+
   keyword(aggs, field) {
+    let size = this.options.aggs_keyword_size || 10
     aggs[field] = {
       "terms": {
         "field": field,
-        "size": 1000
+        "size": size
       }
     }
   }
+
 }
 
 class Idx {
-  constructor(index, type, props) {
+  constructor(index, type, props, options) {
     this.index = index
     this.type = type
     this.index_type = this.index + "/" + this.type
     this.props = props
+    this.options = options || {}
+    this.aggs_maker = new AggsMaker(this.options)
   }
 
   aggs_body() {
     if (!this._aggs_body) {
-      this._aggs_body = aggs_maker.make_aggs(this.props)
+      this._aggs_body = this.aggs_maker.make_aggs(this.props)
     }
     return this._aggs_body
   }

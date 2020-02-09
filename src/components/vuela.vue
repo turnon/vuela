@@ -33,6 +33,7 @@
 
   export default {
     store,
+    props: ["options"],
     data() {
       return {
         index_type: "",
@@ -49,7 +50,7 @@
     },
 
     mounted() {
-      this.$store.dispatch('load_indexes')
+      this.$store.dispatch('load_indexes', this.options)
     },
 
     methods: {

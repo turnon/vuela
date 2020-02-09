@@ -5,6 +5,7 @@ import load_mappings from './mapping.js'
 Vue.use(Vuex)
 
 function handle_err(err) {
+  console.error(err)
   return err.response ? JSON.stringify(err.response) : err
 }
 
@@ -80,8 +81,8 @@ export default new Vuex.Store({
   },
 
   actions: {
-    load_indexes(ctx) {
-      load_mappings().then(mappings => {
+    load_indexes(ctx, options) {
+      load_mappings(options).then(mappings => {
         ctx.commit('refresh', {
           name_indexes: mappings,
           alarm: null
