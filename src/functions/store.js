@@ -9,6 +9,10 @@ function handle_err(err) {
 }
 
 function construct_conditions(options) {
+  if (!options) {
+    return []
+  }
+
   let group_by_field = options.reduce((group_by_field, node) => {
     let group = group_by_field[node.field] || [];
     group.push(node.value);
@@ -49,7 +53,7 @@ export default new Vuex.Store({
     name_indexes: {},
     current_index: null,
     alarm: null,
-    picked: [],
+    picked: {},
     aggs: [],
     result: {}
   },
