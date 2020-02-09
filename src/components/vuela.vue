@@ -1,6 +1,8 @@
 <template>
   <div>
-    <el-input v-model="index_type" @change="get_mapping" />
+    <el-select v-model="index_type" placeholder="index" style="width: 100%" @change="get_mapping">
+      <el-option v-for="(es, idx) in $store.state.ess" :key="idx" :label="idx" :value="idx" />
+    </el-select>
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
@@ -14,7 +16,8 @@
   import Vue from 'vue'
 
   import {
-    Input,
+    Select,
+    Option,
     Button,
     Alert
   } from 'element-ui'
@@ -23,7 +26,8 @@
   import selector from './selector.vue'
   import store from '../functions/store.js'
 
-  Vue.use(Input)
+  Vue.use(Select)
+  Vue.use(Option)
   Vue.use(Button)
   Vue.use(Alert)
 
@@ -44,6 +48,10 @@
       }
     },
 
+    mounted() {
+      this.$store.dispatch('load_indexes')
+    },
+
     methods: {
       get_mapping() {
         this.$store.dispatch('change_index', this.index_type)
@@ -53,4 +61,7 @@
 </script>
 
 <style>
+  .ves-selector .el-select {
+    width: 100%
+  }
 </style>

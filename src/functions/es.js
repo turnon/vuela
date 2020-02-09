@@ -40,32 +40,16 @@ let aggs_maker = {
 }
 
 class Es {
-  constructor(index_type) {
-    this.index = index_type.replace(/\/.*/, '')
-    this.type = index_type.indexOf('/') > 0 ? index_type.replace(/.*\//, '') : "_doc"
+  constructor(index, type, props) {
+    this.index = index
+    this.type = type
     this.index_type = this.index + "/" + this.type
+    this.props = props
   }
 
-  async mapping() {
-    let m = await axios.get("/" + this.index + "/_mapping").then(res => {
-      let props_of_type = res.data[this.index]["mappings"][this.type]
-      if (!props_of_type) {
-        throw "type " + type + " not found in index " + this.index
-      }
-
-      let properties = props_of_type["properties"]
-      delete properties["id"]
-
-      return properties
-    })
-
-    return m
-  }
-
-  async aggs_body() {
+  aggs_body() {
     if (!this._aggs_body) {
-      let properties = await this.mapping()
-      this._aggs_body = aggs_maker.make_aggs(properties)
+      this._aggs_body = aggs_maker.make_aggs(this.props)
     }
     return this._aggs_body
   }
@@ -102,7 +86,7 @@ class Es {
 
   async basic_search(more) {
     let q = {
-      aggs: await this.aggs_body()
+      aggs: this.aggs_body()
     }
     if (more) {
       Object.assign(q, more)
