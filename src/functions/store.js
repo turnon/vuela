@@ -97,6 +97,10 @@ export default new Vuex.Store({
     change_index(ctx, index) {
       let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
+        alarm: null,
+        picked: {},
+        aggs: [],
+        result: {},
         current_index: idx
       })
 
