@@ -70,7 +70,7 @@ class Idx {
     let result = await this.basic_search()
 
     let new_aggs = [],
-      aggs = result.data["aggregations"]
+      aggs = result["aggregations"]
 
     for (let field in aggs) {
       let values = aggs[field]["buckets"].map(b => {
@@ -105,7 +105,8 @@ class Idx {
     }
     let path = `/${this.index_type}/_search`
     path = this.options.namespace ? `/${this.options.namespace}${path}` : path
-    return await axios.post(path, q)
+    let resp = await axios.post(path, q)
+    return resp.data
   }
 }
 
