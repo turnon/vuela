@@ -108,9 +108,9 @@ export default new Vuex.Store({
         current_index: idx
       })
 
-      idx.aggs_result().then(res => {
+      idx.basic_search().then(idx => {
         ctx.commit('refresh', {
-          aggs: res,
+          aggs: idx.aggs_result(),
           alarm: null
         })
       }).catch(err => {
@@ -122,11 +122,15 @@ export default new Vuex.Store({
     },
 
     submit(ctx) {
-      ctx.state.current_index.search(construct_query_body(ctx.state.picked)).then(res => {
-        ctx.commit('refresh', {
-          result: res,
+      ctx.state.current_index.search(construct_query_body(ctx.state.picked)).then(idx => {
+        let new_state = {
+          result: idx.hits(),
           alarm: null
-        })
+        }
+        if (new_state.result.total > 0) {
+          new_state.aggs = idx.aggs_result()
+        }
+        ctx.commit('refresh', new_state)
       }).catch(err => {
         ctx.commit('refresh', {
           result: {},

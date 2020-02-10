@@ -66,11 +66,13 @@ class Idx {
     return this._aggs_body
   }
 
-  async aggs_result() {
-    let result = await this.basic_search()
+  hits() {
+    return this.resp.hits
+  }
 
+  aggs_result() {
     let new_aggs = [],
-      aggs = result["aggregations"]
+      aggs = this.resp.aggregations
 
     for (let field in aggs) {
       let values = aggs[field]["buckets"].map(b => {
@@ -106,7 +108,8 @@ class Idx {
     let path = `/${this.index_type}/_search`
     path = this.options.namespace ? `/${this.options.namespace}${path}` : path
     let resp = await axios.post(path, q)
-    return resp.data
+    this.resp = resp.data
+    return Promise.resolve(this)
   }
 }
 
