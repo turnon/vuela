@@ -8,6 +8,8 @@
 
     <selector style="margin-top: .25rem" />
 
+    <sorter style="margin-top: .25rem" />
+
     <el-button type="primary" plain style="margin-top: .25rem; width: 100%;" v-if="$store.getters.has_aggs" @click="$store.dispatch('submit')">submit</el-button>
   </div>
 </template>
@@ -24,6 +26,7 @@
   import 'element-ui/lib/theme-chalk/index.css';
 
   import selector from './selector.vue'
+  import sorter from './sorter.vue'
   import store from '../functions/store.js'
 
   Vue.use(Select)
@@ -40,7 +43,8 @@
       }
     },
     components: {
-      selector
+      selector,
+      sorter
     },
 
     watch: {

@@ -55,6 +55,7 @@ export default new Vuex.Store({
     current_index: null,
     alarm: null,
     picked: {},
+    sort: [],
     aggs: [],
     result: {}
   },
@@ -62,6 +63,9 @@ export default new Vuex.Store({
   getters: {
     index_names(state) {
       return Object.keys(state.name_indexes).sort()
+    },
+    order_options(state) {
+      return state.current_index ? state.current_index.order_options() : []
     },
     has_alarm(state) {
       return state.alarm !== null
@@ -103,12 +107,13 @@ export default new Vuex.Store({
       ctx.commit('refresh', {
         alarm: null,
         picked: {},
+        sort: [],
         aggs: [],
         result: {},
         current_index: idx
       })
 
-      idx.basic_search().then(idx => {
+      idx.search().then(idx => {
         ctx.commit('refresh', {
           aggs: idx.aggs_result(),
           alarm: null
@@ -122,7 +127,12 @@ export default new Vuex.Store({
     },
 
     submit(ctx) {
-      ctx.state.current_index.search(construct_query_body(ctx.state.picked)).then(idx => {
+      let body = {
+        query: construct_query_body(ctx.state.picked),
+        sort: ctx.state.sort
+      }
+
+      ctx.state.current_index.search(body).then(idx => {
         let new_state = {
           result: idx.hits(),
           alarm: null

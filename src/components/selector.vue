@@ -1,11 +1,12 @@
 <template>
   <div class='ves-selector' v-if="$store.getters.has_aggs">
     <div class="include">
-      <el-cascader placeholder="include" filterable v-model="included" :options="$store.state.aggs" :props="props" @change="handle_change" />
+      <el-cascader placeholder="include" filterable v-model="included" :options="$store.state.aggs" :props="props"
+        @change="handle_change" />
     </div>
     <div class="exclude">
-      <el-cascader placeholder="exclude" filterable v-model="excluded" :options="$store.state.aggs" :props="props" @change="handle_change"
-        style="margin-top: .25rem" />
+      <el-cascader placeholder="exclude" filterable v-model="excluded" :options="$store.state.aggs" :props="props"
+        @change="handle_change" style="margin-top: .25rem" />
     </div>
   </div>
 </template>
@@ -77,7 +78,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .ves-selector .el-cascader {
     width: 100%
   }

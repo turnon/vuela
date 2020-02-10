@@ -59,6 +59,29 @@ class Idx {
     this.aggs_maker = new AggsMaker(this.options)
   }
 
+  prop_list() {
+    return Object.keys(this.props)
+  }
+
+  order_options() {
+    return this.prop_list().sort().map(p => {
+      return {
+        label: p,
+        children: [{
+          label: 'asc',
+          value: {
+            [p]: 'asc'
+          }
+        }, {
+          label: 'desc',
+          value: {
+            [p]: 'desc'
+          }
+        }]
+      }
+    })
+  }
+
   aggs_body() {
     if (!this._aggs_body) {
       this._aggs_body = this.aggs_maker.make_aggs(this.props)
@@ -92,13 +115,7 @@ class Idx {
     return new_aggs
   }
 
-  async search(query) {
-    return await this.basic_search({
-      query
-    })
-  }
-
-  async basic_search(more) {
+  async search(more) {
     let q = {
       aggs: this.aggs_body()
     }
