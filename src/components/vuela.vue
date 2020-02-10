@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-select v-model="index_type" placeholder="index" style="width: 100%" @change="change_index">
-      <el-option v-for="(es, idx) in $store.state.name_indexes" :key="idx" :label="idx" :value="idx" />
+    <el-select v-model="index_type" placeholder="index" filterable style="width: 100%" @change="change_index">
+      <el-option v-for="idx in $store.getters.index_names" :key="idx" :label="idx" :value="idx" />
     </el-select>
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />

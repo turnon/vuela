@@ -60,6 +60,9 @@ export default new Vuex.Store({
   },
 
   getters: {
+    index_names(state) {
+      return Object.keys(state.name_indexes).sort()
+    },
     has_alarm(state) {
       return state.alarm !== null
     },
