@@ -10,7 +10,10 @@
 
     <sorter style="margin-top: .25rem" />
 
-    <el-button type="primary" plain style="margin-top: .25rem; width: 100%;" v-if="$store.getters.has_aggs" @click="$store.dispatch('submit')">submit</el-button>
+    <div class="vuela-submit" v-if="$store.getters.has_aggs">
+      <el-button type="primary" plain @click="$store.dispatch('submit')">submit</el-button>
+      <el-button type="primary" plain @click="$store.dispatch('load_more')">more</el-button>
+    </div>
   </div>
 </template>
 
@@ -68,5 +71,11 @@
 <style>
   .ves-selector .el-select {
     width: 100%
+  }
+
+  .vuela-submit .el-button {
+    margin-top: .25rem;
+    margin-left: 0;
+    width: 100%;
   }
 </style>
