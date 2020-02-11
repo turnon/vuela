@@ -1,5 +1,7 @@
 import axios from "axios"
 
+const scroll_alive = "1m"
+
 class AggsMaker {
   constructor(options) {
     this.options = options
@@ -59,6 +61,10 @@ class Idx {
     this.aggs_maker = new AggsMaker(this.options)
   }
 
+  namaspaced_path(path) {
+    return this.options.namespace ? `/${this.options.namespace}${path}` : path
+  }
+
   prop_list() {
     return Object.keys(this.props)
   }
@@ -115,19 +121,36 @@ class Idx {
     return new_aggs
   }
 
-  async search(more) {
+  statistic() {
+    return this.request(`/${this.index_type}/_search`, {
+      size: 0,
+      aggs: this.aggs_body()
+    })
+  }
+
+  scroll_init(more) {
     let q = {
       aggs: this.aggs_body()
     }
-    if (more) {
-      Object.assign(q, more)
-    }
-    let path = `/${this.index_type}/_search`
-    path = this.options.namespace ? `/${this.options.namespace}${path}` : path
+    Object.assign(q, more)
+    q.sort = q.sort.length ? q.sort : ["_doc"]
+    return this.request(`/${this.index_type}/_search?scroll=${scroll_alive}`, q)
+  }
+
+  scroll_next() {
+    return this.request("/_search/scroll", {
+      scroll: scroll_alive,
+      scroll_id: this.resp["_scroll_id"]
+    })
+  }
+
+  async request(path, q) {
+    path = this.namaspaced_path(path)
     let resp = await axios.post(path, q)
     this.resp = resp.data
     return Promise.resolve(this)
   }
+
 }
 
 export default Idx

@@ -113,7 +113,7 @@ export default new Vuex.Store({
         current_index: idx
       })
 
-      idx.search().then(idx => {
+      idx.statistic().then(idx => {
         ctx.commit('refresh', {
           aggs: idx.aggs_result(),
           alarm: null
@@ -132,7 +132,7 @@ export default new Vuex.Store({
         sort: ctx.state.sort
       }
 
-      ctx.state.current_index.search(body).then(idx => {
+      ctx.state.current_index.scroll_init(body).then(idx => {
         let new_state = {
           result: idx.hits(),
           alarm: null
