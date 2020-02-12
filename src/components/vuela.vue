@@ -36,6 +36,15 @@
   Vue.use(Button)
   Vue.use(Alert)
 
+  function replace_or_append(component, result_attr) {
+    let last_result = component[result_attr]
+    if (!last_result || last_result.simple_scroll_id !== this.simple_scroll_id) {
+      component[result_attr] = this
+      return
+    }
+    last_result.hits.hits = last_result.hits.hits.concat(this.hits.hits)
+  }
+
   export default {
     store,
     props: ["options", "flip"],
@@ -55,6 +64,7 @@
       },
       "$store.state.result": function(val) {
         this.$emit('result', {
+          replace_or_append,
           simple_scroll_id: this.$store.state.simple_scroll_id,
           hits: val
         })

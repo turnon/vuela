@@ -39,10 +39,7 @@
         this.page = flip()
       },
       handle_result(res) {
-        if (!this.result || this.result.simple_scroll_id !== res.simple_scroll_id) {
-          return this.result = res
-        }
-        this.result.hits.hits = this.result.hits.hits.concat(res.hits.hits)
+        res.replace_or_append(this, 'result')
       }
     }
   }
