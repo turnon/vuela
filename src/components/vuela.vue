@@ -12,7 +12,6 @@
 
     <div class="vuela-submit" v-if="$store.getters.has_aggs">
       <el-button type="primary" plain @click="$store.dispatch('submit')">submit</el-button>
-      <el-button type="primary" plain @click="$store.dispatch('load_more')">more</el-button>
     </div>
   </div>
 </template>
@@ -39,7 +38,7 @@
 
   export default {
     store,
-    props: ["options"],
+    props: ["options", "flip"],
     data() {
       return {
         index_type: "",
@@ -51,6 +50,9 @@
     },
 
     watch: {
+      flip: function(val) {
+        this.$store.dispatch('load_more')
+      },
       "$store.state.result": function(val) {
         this.$emit('result', val)
       }
