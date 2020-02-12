@@ -49,6 +49,25 @@ function construct_query_body(picked) {
   }
 }
 
+function scroll(ctx, scroll_fn) {
+  scroll_fn(ctx.state.current_index).then(idx => {
+    let new_state = {
+      result: idx.hits(),
+      alarm: null
+    }
+    let aggs = idx.aggs_result()
+    if (new_state.result.total > 0 && aggs.length) {
+      new_state.aggs = aggs
+    }
+    ctx.commit('refresh', new_state)
+  }).catch(err => {
+    ctx.commit('refresh', {
+      result: {},
+      alarm: handle_err(err)
+    })
+  })
+}
+
 export default new Vuex.Store({
   state: {
     name_indexes: {},
@@ -57,6 +76,7 @@ export default new Vuex.Store({
     picked: {},
     sort: [],
     aggs: [],
+    simple_scroll_id: 0,
     result: {}
   },
 
@@ -113,7 +133,7 @@ export default new Vuex.Store({
         current_index: idx
       })
 
-      idx.search().then(idx => {
+      idx.statistic().then(idx => {
         ctx.commit('refresh', {
           aggs: idx.aggs_result(),
           alarm: null
@@ -127,25 +147,23 @@ export default new Vuex.Store({
     },
 
     submit(ctx) {
-      let body = {
-        query: construct_query_body(ctx.state.picked),
-        sort: ctx.state.sort
-      }
+      let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
+        body = {
+          query: construct_query_body(ctx.state.picked),
+          sort: ctx.state.sort
+        }
 
-      ctx.state.current_index.search(body).then(idx => {
-        let new_state = {
-          result: idx.hits(),
-          alarm: null
-        }
-        if (new_state.result.total > 0) {
-          new_state.aggs = idx.aggs_result()
-        }
-        ctx.commit('refresh', new_state)
-      }).catch(err => {
+      scroll(ctx, (idx) => {
         ctx.commit('refresh', {
-          result: {},
-          alarm: handle_err(err)
+          simple_scroll_id: new_simple_scroll_id
         })
+        return idx.scroll_init(body)
+      })
+    },
+
+    load_more(ctx) {
+      scroll(ctx, (idx) => {
+        return idx.scroll_next()
       })
     }
   }

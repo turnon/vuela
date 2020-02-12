@@ -78,28 +78,28 @@
   }
 </script>
 
-<style scoped>
+<style>
   .ves-selector .el-cascader {
     width: 100%
   }
 
-  .include .el-cascader__tags .el-tag {
+  .ves-selector .include .el-cascader__tags .el-tag {
     color: #67c23a;
     background: #f0f9eb;
     border-color: #c2e7b0;
   }
 
-  .include .el-cascader__tags .el-tag .el-icon-close {
+  .ves-selector .include .el-cascader__tags .el-tag .el-icon-close {
     background-color: #5daf34;
   }
 
-  .exclude .el-cascader__tags .el-tag {
+  .ves-selector .exclude .el-cascader__tags .el-tag {
     color: #f56c6c;
     background: #fef0f0;
     border-color: #fbc4c4;
   }
 
-  .exclude .el-cascader__tags .el-tag .el-icon-close {
+  .ves-selector .exclude .el-cascader__tags .el-tag .el-icon-close {
     background-color: #f56c6c;
   }
 </style>

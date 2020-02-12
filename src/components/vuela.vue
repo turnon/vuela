@@ -10,7 +10,9 @@
 
     <sorter style="margin-top: .25rem" />
 
-    <el-button type="primary" plain style="margin-top: .25rem; width: 100%;" v-if="$store.getters.has_aggs" @click="$store.dispatch('submit')">submit</el-button>
+    <div class="vuela-submit" v-if="$store.getters.has_aggs">
+      <el-button type="primary" plain @click="$store.dispatch('submit')">submit</el-button>
+    </div>
   </div>
 </template>
 
@@ -34,9 +36,18 @@
   Vue.use(Button)
   Vue.use(Alert)
 
+  function replace_or_append(component, result_attr) {
+    let last_result = component[result_attr]
+    if (!last_result || last_result.simple_scroll_id !== this.simple_scroll_id) {
+      component[result_attr] = this
+      return
+    }
+    last_result.hits.hits = last_result.hits.hits.concat(this.hits.hits)
+  }
+
   export default {
     store,
-    props: ["options"],
+    props: ["options", "flip"],
     data() {
       return {
         index_type: "",
@@ -48,8 +59,15 @@
     },
 
     watch: {
+      flip: function(val) {
+        this.$store.dispatch('load_more')
+      },
       "$store.state.result": function(val) {
-        this.$emit('result', val)
+        this.$emit('result', {
+          replace_or_append,
+          simple_scroll_id: this.$store.state.simple_scroll_id,
+          hits: val
+        })
       }
     },
 
@@ -68,5 +86,11 @@
 <style>
   .ves-selector .el-select {
     width: 100%
+  }
+
+  .vuela-submit .el-button {
+    margin-top: .25rem;
+    margin-left: 0;
+    width: 100%;
   }
 </style>
