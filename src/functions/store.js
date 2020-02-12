@@ -76,6 +76,7 @@ export default new Vuex.Store({
     picked: {},
     sort: [],
     aggs: [],
+    simple_scroll_id: 0,
     result: {}
   },
 
@@ -146,12 +147,16 @@ export default new Vuex.Store({
     },
 
     submit(ctx) {
-      let body = {
-        query: construct_query_body(ctx.state.picked),
-        sort: ctx.state.sort
-      }
+      let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
+        body = {
+          query: construct_query_body(ctx.state.picked),
+          sort: ctx.state.sort
+        }
 
       scroll(ctx, (idx) => {
+        ctx.commit('refresh', {
+          simple_scroll_id: new_simple_scroll_id
+        })
         return idx.scroll_init(body)
       })
     },

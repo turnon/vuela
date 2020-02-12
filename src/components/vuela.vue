@@ -54,7 +54,10 @@
         this.$store.dispatch('load_more')
       },
       "$store.state.result": function(val) {
-        this.$emit('result', val)
+        this.$emit('result', {
+          simple_scroll_id: this.$store.state.simple_scroll_id,
+          hits: val
+        })
       }
     },
 
