@@ -2,7 +2,16 @@
   <div id="app">
     <vuela :options="{namespace: 'es_backend',aggs_keyword_size: 100}" :flip="page" @result="handle_result" />
     <button @click='load_more'>load more</button>
-    <div>{{ result }}</div>
+
+    <div v-if="result">
+      {{ result.total }}
+      <ul>
+        <li v-for="hit in result.hits">
+          {{ hit }}
+        </li>
+      </ul>
+    </div>
+
   </div>
 </template>
 
