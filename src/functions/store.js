@@ -52,17 +52,17 @@ function construct_query_body(picked) {
 function scroll(ctx, scroll_fn) {
   scroll_fn(ctx.state.current_index).then(idx => {
     let new_state = {
-      result: idx.hits(),
+      hits: idx.hits(),
       alarm: null
     }
     let aggs = idx.aggs_result()
-    if (new_state.result.total > 0 && aggs.length) {
+    if (new_state.hits.total > 0 && aggs.length) {
       new_state.aggs = aggs
     }
     ctx.commit('refresh', new_state)
   }).catch(err => {
     ctx.commit('refresh', {
-      result: {},
+      hits: {},
       alarm: handle_err(err)
     })
   })
@@ -77,7 +77,7 @@ export default new Vuex.Store({
     sort: [],
     aggs: [],
     simple_scroll_id: 0,
-    result: {}
+    hits: {}
   },
 
   getters: {
@@ -129,7 +129,7 @@ export default new Vuex.Store({
         picked: {},
         sort: [],
         aggs: [],
-        result: {},
+        hits: {},
         current_index: idx
       })
 

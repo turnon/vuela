@@ -62,7 +62,7 @@
       flip: function(val) {
         this.$store.dispatch('load_more')
       },
-      "$store.state.result": function(val) {
+      "$store.state.hits": function(val) {
         this.$emit('result', {
           replace_or_append,
           simple_scroll_id: this.$store.state.simple_scroll_id,
