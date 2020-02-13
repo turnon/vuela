@@ -69,6 +69,14 @@ class Idx {
     return Object.keys(this.props)
   }
 
+  text_options() {
+    let fields = []
+    for (let field in this.props)
+      if (this.props[field].type === 'text')
+        fields.push(field)
+    return fields.sort()
+  }
+
   order_options() {
     return this.prop_list().sort().map(p => {
       return {

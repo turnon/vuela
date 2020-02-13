@@ -6,7 +6,9 @@
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <selector style="margin-top: .25rem" />
+    <matcher style="margin-top: .25rem" v-if="$store.getters.has_aggs" />
+
+    <selector style="margin-top: .25rem" v-if="$store.getters.has_aggs" />
 
     <sorter style="margin-top: .25rem" />
 
@@ -20,6 +22,7 @@
   import Vue from 'vue'
 
   import {
+    Input,
     Select,
     Option,
     Button,
@@ -28,9 +31,11 @@
   import 'element-ui/lib/theme-chalk/index.css';
 
   import selector from './selector.vue'
+  import matcher from './matcher.vue'
   import sorter from './sorter.vue'
   import store from '../functions/store.js'
 
+  Vue.use(Input)
   Vue.use(Select)
   Vue.use(Option)
   Vue.use(Button)
@@ -54,6 +59,7 @@
       }
     },
     components: {
+      matcher,
       selector,
       sorter
     },
