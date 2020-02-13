@@ -36,13 +36,15 @@ function construct_conditions(options) {
   return conditions
 }
 
-function construct_query_body(picked) {
+function construct_query_body(cond) {
+  let must = construct_conditions(cond.picked.included)
+  if (cond.match) must.push(cond.match)
   return {
     bool: {
       filter: [{
         bool: {
-          must: construct_conditions(picked.included),
-          must_not: construct_conditions(picked.excluded)
+          must: must,
+          must_not: construct_conditions(cond.picked.excluded)
         }
       }]
     }
@@ -73,6 +75,7 @@ export default new Vuex.Store({
     name_indexes: {},
     current_index: null,
     alarm: null,
+    match: null,
     picked: {},
     sort: [],
     aggs: [],
@@ -86,6 +89,9 @@ export default new Vuex.Store({
     },
     order_options(state) {
       return state.current_index ? state.current_index.order_options() : []
+    },
+    text_options(state) {
+      return state.current_index ? state.current_index.text_options() : []
     },
     has_alarm(state) {
       return state.alarm !== null
@@ -148,8 +154,12 @@ export default new Vuex.Store({
 
     submit(ctx) {
       let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
+        cond = {
+          picked: ctx.state.picked,
+          match: ctx.state.match
+        },
         body = {
-          query: construct_query_body(ctx.state.picked),
+          query: construct_query_body(cond),
           sort: ctx.state.sort
         }
 
