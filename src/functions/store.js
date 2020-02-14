@@ -11,7 +11,7 @@ function handle_err(err) {
 
 function construct_query_body(conditions) {
   let must = Object.values(conditions).reduce((arr, cond) => {
-    cond = cond.length ? cond : [cond];
+    cond = Array.isArray(cond) ? cond : [cond];
     return arr.concat(cond)
   }, [])
 
