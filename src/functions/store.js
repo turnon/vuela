@@ -1,29 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import load_mappings from './mapping.js'
+import Query from './query.js'
 
 Vue.use(Vuex)
 
 function handle_err(err) {
   console.error(err)
   return err.response ? JSON.stringify(err.response) : err
-}
-
-function construct_query_body(conditions) {
-  let must = Object.values(conditions).reduce((arr, cond) => {
-    cond = Array.isArray(cond) ? cond : [cond];
-    return arr.concat(cond)
-  }, [])
-
-  return {
-    bool: {
-      filter: [{
-        bool: {
-          must: must
-        }
-      }]
-    }
-  }
 }
 
 function scroll(ctx, scroll_fn) {
@@ -50,7 +34,7 @@ export default new Vuex.Store({
     name_indexes: {},
     current_index: null,
     alarm: null,
-    conditions: {},
+    query: null,
     sort: [],
     aggs: [],
     simple_scroll_id: 0,
@@ -83,8 +67,7 @@ export default new Vuex.Store({
     },
 
     change_cond(state, cond) {
-      state.conditions[cond.id] = cond.cond
-      console.log(JSON.stringify(state.conditions))
+      state.query.put_condition(cond.id, cond.cond)
     },
   },
 
@@ -107,7 +90,7 @@ export default new Vuex.Store({
       let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
         alarm: null,
-        conditions: {},
+        query: new Query(),
         sort: [],
         aggs: [],
         hits: {},
@@ -130,7 +113,7 @@ export default new Vuex.Store({
     submit(ctx) {
       let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
         body = {
-          query: construct_query_body(ctx.state.conditions),
+          query: ctx.state.query.to_json(),
           sort: ctx.state.sort
         }
 
