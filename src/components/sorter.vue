@@ -1,6 +1,6 @@
 <template>
   <div class='ves-selector'>
-    <el-cascader placeholder="order by" filterable clearable v-model="value" separator=": " :options="$store.getters.order_options"
+    <el-cascader placeholder="sort" filterable clearable v-model="value" separator=": " :options="$store.getters.order_options"
       :props="props" @change="handle_change" />
   </div>
 </template>
@@ -16,18 +16,9 @@
       }
     },
 
-    watch: {
-      "$store.state.current_index": function() {
-        this.value = []
-      }
-    },
-
     methods: {
       handle_change() {
-        let sort = this.value[1] ? [this.value[1]] : []
-        this.$store.commit("refresh", {
-          sort: sort
-        })
+        this.$emit('change_sort', this.value[1])
       }
     }
   }

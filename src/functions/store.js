@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import load_mappings from './mapping.js'
 import Query from './query.js'
+import Sort from './sort.js'
 
 Vue.use(Vuex)
 
@@ -35,7 +36,7 @@ export default new Vuex.Store({
     current_index: null,
     alarm: null,
     query: null,
-    sort: [],
+    sort: null,
     aggs: [],
     simple_scroll_id: 0,
     hits: {}
@@ -69,6 +70,10 @@ export default new Vuex.Store({
     change_cond(state, cond) {
       state.query.put_condition(cond.id, cond.cond)
     },
+
+    change_sort(state, cond) {
+      state.sort.add_sortor(cond.id, cond.cond)
+    },
   },
 
   actions: {
@@ -91,7 +96,7 @@ export default new Vuex.Store({
       ctx.commit('refresh', {
         alarm: null,
         query: new Query(),
-        sort: [],
+        sort: new Sort(),
         aggs: [],
         hits: {},
         current_index: idx
@@ -114,7 +119,7 @@ export default new Vuex.Store({
       let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
         body = {
           query: ctx.state.query.to_json(),
-          sort: ctx.state.sort
+          sort: ctx.state.sort.to_json()
         }
 
       scroll(ctx, (idx) => {
