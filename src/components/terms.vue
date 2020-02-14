@@ -1,7 +1,6 @@
 <template>
   <div class='ves-selector'>
-    <el-cascader placeholder="terms" filterable v-model="included" :options="$store.state.aggs" :props="props"
-      @change="handle_change" />
+    <el-cascader placeholder="terms" filterable v-model="included" :options="$store.state.aggs" :props="props" @change="handle_change" />
   </div>
 </template>
 
@@ -83,7 +82,10 @@
     methods: {
       handle_change() {
         let terms = reduce_to_terms(this.included.map(arr => arr[1]))
-        this.$emit("change_cond", terms)
+        this.$emit("change_cond", {
+          type: 'query',
+          cond: terms
+        })
       }
     }
   }

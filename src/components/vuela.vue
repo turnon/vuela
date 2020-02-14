@@ -8,7 +8,7 @@
 
     <div v-if="$store.getters.has_aggs">
       <div v-for="cond in conditions" :key="cond.id" style="margin-top: .25rem">
-        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" @change_sort="change_sort(cond.id, $event)" />
+        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" />
       </div>
 
       <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="add_cond">
@@ -100,13 +100,7 @@
       change_cond(id, cond) {
         this.$store.commit('change_cond', {
           id,
-          cond
-        })
-      },
-      change_sort(id, cond) {
-        this.$store.commit('change_sort', {
-          id,
-          cond
+          ...cond
         })
       },
       change_index() {

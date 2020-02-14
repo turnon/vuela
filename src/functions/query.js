@@ -3,7 +3,7 @@ class Query {
     this.conditions = {}
   }
 
-  put_condition(id, cond) {
+  put(id, cond) {
     this.conditions[id] = cond
     console.log(JSON.stringify(this.conditions))
   }

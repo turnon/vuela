@@ -22,10 +22,14 @@
     },
     methods: {
       change() {
-        this.$emit("change_cond", {
+        let cond = {
           match_phrase: {
             [this.field]: this.phrase
           }
+        }
+        this.$emit("change_cond", {
+          type: 'query',
+          cond
         })
       }
     }

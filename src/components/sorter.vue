@@ -18,7 +18,10 @@
 
     methods: {
       handle_change() {
-        this.$emit('change_sort', this.value[1])
+        this.$emit('change_cond', {
+          type: 'sort',
+          cond: this.value[1]
+        })
       }
     }
   }

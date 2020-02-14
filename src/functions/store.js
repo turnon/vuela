@@ -68,11 +68,7 @@ export default new Vuex.Store({
     },
 
     change_cond(state, cond) {
-      state.query.put_condition(cond.id, cond.cond)
-    },
-
-    change_sort(state, cond) {
-      state.sort.add_sortor(cond.id, cond.cond)
+      state[cond.type].put(cond.id, cond.cond)
     },
   },
 

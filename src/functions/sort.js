@@ -4,7 +4,7 @@ class Sort {
     this.seq = []
   }
 
-  add_sortor(id, sortor) {
+  put(id, sortor) {
     this.sortors[id] = sortor
     this.seq.push(id)
     console.log(JSON.stringify(this.to_json()))
