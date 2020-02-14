@@ -1,6 +1,6 @@
 <template>
   <div class='ves-selector'>
-    <el-cascader placeholder="include" filterable v-model="included" :options="$store.state.aggs" :props="props"
+    <el-cascader placeholder="terms" filterable v-model="included" :options="$store.state.aggs" :props="props"
       @change="handle_change" />
   </div>
 </template>

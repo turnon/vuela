@@ -12,7 +12,7 @@
       </div>
 
       <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="add_cond">
-        <el-option v-for="cond in ['matcher', 'selector', 'sorter',]" :key="cond" :label="cond" :value="cond" />
+        <el-option v-for="cond in ['match_phrase', 'terms', 'sorter',]" :key="cond" :label="cond" :value="cond" />
       </el-select>
     </div>
 
@@ -34,8 +34,8 @@
   } from 'element-ui'
   import 'element-ui/lib/theme-chalk/index.css';
 
-  import selector from './selector.vue'
-  import matcher from './matcher.vue'
+  import terms from './terms.vue'
+  import match_phrase from './match_phrase.vue'
   import sorter from './sorter.vue'
   import store from '../functions/store.js'
 
@@ -65,8 +65,8 @@
       }
     },
     components: {
-      matcher,
-      selector,
+      match_phrase,
+      terms,
       sorter
     },
 
@@ -111,10 +111,6 @@
 </script>
 
 <style>
-  .ves-selector .el-select {
-    width: 100%
-  }
-
   .vuela-submit .el-button {
     margin-top: .25rem;
     margin-left: 0;
