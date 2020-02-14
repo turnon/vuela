@@ -1,13 +1,7 @@
 <template>
   <div class='ves-selector'>
-    <div class="include">
-      <el-cascader placeholder="include" filterable v-model="included" :options="$store.state.aggs" :props="props"
-        @change="handle_change" />
-    </div>
-    <div class="exclude">
-      <el-cascader placeholder="exclude" filterable v-model="excluded" :options="$store.state.aggs" :props="props"
-        @change="handle_change" style="margin-top: .25rem" />
-    </div>
+    <el-cascader placeholder="include" filterable v-model="included" :options="$store.state.aggs" :props="props"
+      @change="handle_change" />
   </div>
 </template>
 
@@ -48,6 +42,33 @@
     }
   }
 
+  function reduce_to_terms(options) {
+    if (!options) {
+      return []
+    }
+
+    let group_by_field = options.reduce((group_by_field, node) => {
+      let group = group_by_field[node.field] || [];
+      group.push(node.value);
+      group_by_field[node.field] = group;
+      return group_by_field
+    }, {})
+
+
+    let conditions = []
+    for (let field in group_by_field) {
+      let values = group_by_field[field]
+      let condition = {
+        terms: {
+          [field]: values
+        }
+      }
+      conditions.push(condition)
+    }
+
+    return conditions
+  }
+
   export default {
     data() {
       return {
@@ -56,7 +77,6 @@
           multiple: true
         },
         included: [],
-        excluded: []
       }
     },
 
@@ -69,10 +89,8 @@
 
     methods: {
       handle_change() {
-        this.$store.commit("pick", {
-          included: this.included.map(arr => arr[1]),
-          excluded: this.excluded.map(arr => arr[1])
-        })
+        let terms = reduce_to_terms(this.included.map(arr => arr[1]))
+        this.$emit("change_cond", terms)
       }
     }
   }
@@ -81,25 +99,5 @@
 <style>
   .ves-selector .el-cascader {
     width: 100%
-  }
-
-  .ves-selector .include .el-cascader__tags .el-tag {
-    color: #67c23a;
-    background: #f0f9eb;
-    border-color: #c2e7b0;
-  }
-
-  .ves-selector .include .el-cascader__tags .el-tag .el-icon-close {
-    background-color: #5daf34;
-  }
-
-  .ves-selector .exclude .el-cascader__tags .el-tag {
-    color: #f56c6c;
-    background: #fef0f0;
-    border-color: #fbc4c4;
-  }
-
-  .ves-selector .exclude .el-cascader__tags .el-tag .el-icon-close {
-    background-color: #f56c6c;
   }
 </style>

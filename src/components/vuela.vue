@@ -6,11 +6,15 @@
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <matcher style="margin-top: .25rem" v-if="$store.getters.has_aggs" />
+    <div v-if="$store.getters.has_aggs">
+      <div v-for="cond in conditions" :key="cond.id" style="margin-top: .25rem">
+        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" />
+      </div>
 
-    <selector style="margin-top: .25rem" v-if="$store.getters.has_aggs" />
-
-    <sorter style="margin-top: .25rem" />
+      <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="add_cond">
+        <el-option v-for="cond in ['matcher', 'selector', 'sorter',]" :key="cond" :label="cond" :value="cond" />
+      </el-select>
+    </div>
 
     <div class="vuela-submit" v-if="$store.getters.has_aggs">
       <el-button type="primary" plain @click="$store.dispatch('submit')">submit</el-button>
@@ -55,6 +59,8 @@
     props: ["options", "flip"],
     data() {
       return {
+        new_cond: null,
+        conditions: [],
         index_type: "",
       }
     },
@@ -82,6 +88,18 @@
     },
 
     methods: {
+      add_cond() {
+        this.conditions.push({
+          id: Date.now().toString(),
+          operator: this.new_cond
+        })
+      },
+      change_cond(id, cond) {
+        this.$store.commit('change_cond', {
+          id,
+          cond
+        })
+      },
       change_index() {
         this.$store.dispatch('change_index', this.index_type)
       },

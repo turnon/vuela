@@ -9,42 +9,17 @@ function handle_err(err) {
   return err.response ? JSON.stringify(err.response) : err
 }
 
-function construct_conditions(options) {
-  if (!options) {
-    return []
-  }
+function construct_query_body(conditions) {
+  let must = Object.values(conditions).reduce((arr, cond) => {
+    cond = cond.length ? cond : [cond];
+    return arr.concat(cond)
+  }, [])
 
-  let group_by_field = options.reduce((group_by_field, node) => {
-    let group = group_by_field[node.field] || [];
-    group.push(node.value);
-    group_by_field[node.field] = group;
-    return group_by_field
-  }, {})
-
-
-  let conditions = []
-  for (let field in group_by_field) {
-    let values = group_by_field[field]
-    let condition = {
-      terms: {
-        [field]: values
-      }
-    }
-    conditions.push(condition)
-  }
-
-  return conditions
-}
-
-function construct_query_body(cond) {
-  let must = construct_conditions(cond.picked.included)
-  if (cond.match) must.push(cond.match)
   return {
     bool: {
       filter: [{
         bool: {
-          must: must,
-          must_not: construct_conditions(cond.picked.excluded)
+          must: must
         }
       }]
     }
@@ -75,8 +50,7 @@ export default new Vuex.Store({
     name_indexes: {},
     current_index: null,
     alarm: null,
-    match: null,
-    picked: {},
+    conditions: {},
     sort: [],
     aggs: [],
     simple_scroll_id: 0,
@@ -108,8 +82,9 @@ export default new Vuex.Store({
       }
     },
 
-    pick(state, nodes) {
-      state.picked = nodes
+    change_cond(state, cond) {
+      state.conditions[cond.id] = cond.cond
+      console.log(JSON.stringify(state.conditions))
     },
   },
 
@@ -132,7 +107,7 @@ export default new Vuex.Store({
       let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
         alarm: null,
-        picked: {},
+        conditions: {},
         sort: [],
         aggs: [],
         hits: {},
@@ -154,12 +129,8 @@ export default new Vuex.Store({
 
     submit(ctx) {
       let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
-        cond = {
-          picked: ctx.state.picked,
-          match: ctx.state.match
-        },
         body = {
-          query: construct_query_body(cond),
+          query: construct_query_body(ctx.state.conditions),
           sort: ctx.state.sort
         }
 

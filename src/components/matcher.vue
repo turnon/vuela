@@ -22,11 +22,9 @@
     },
     methods: {
       change() {
-        this.$store.commit("refresh", {
-          match: {
-            "match_phrase": {
-              [this.field]: this.phrase
-            }
+        this.$emit("change_cond", {
+          match_phrase: {
+            [this.field]: this.phrase
           }
         })
       }

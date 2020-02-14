@@ -1,5 +1,5 @@
 <template>
-  <div class='ves-selector' v-if="$store.getters.has_aggs">
+  <div class='ves-selector'>
     <el-cascader placeholder="order by" filterable clearable v-model="value" separator=": " :options="$store.getters.order_options"
       :props="props" @change="handle_change" />
   </div>
