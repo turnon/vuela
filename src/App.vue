@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <vuela :options="{namespace: 'es_backend',aggs_keyword_size: 100}" :flip="page" @result="handle_result" />
+    <vuela :options="{namespace: 'es_backend',aggs_keyword_size: 500}" :flip="page" @result="handle_result" />
     <button @click='load_more'>load more</button>
 
     <div v-if="result">
