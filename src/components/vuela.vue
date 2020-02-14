@@ -71,6 +71,9 @@
     },
 
     watch: {
+      "$store.state.current_index": function() {
+        this.conditions = []
+      },
       flip: function(val) {
         this.$store.dispatch('load_more')
       },

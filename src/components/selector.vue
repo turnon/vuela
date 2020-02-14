@@ -80,13 +80,6 @@
       }
     },
 
-    watch: {
-      "$store.state.current_index": function() {
-        this.included = []
-        this.excluded = []
-      }
-    },
-
     methods: {
       handle_change() {
         let terms = reduce_to_terms(this.included.map(arr => arr[1]))
