@@ -1,7 +1,5 @@
 <template>
-  <div class='ves-selector'>
-    <el-cascader placeholder="terms" filterable v-model="included" :options="$store.state.aggs" :props="props" @change="handle_change" />
-  </div>
+  <el-cascader placeholder="terms" filterable v-model="included" :options="$store.state.aggs" :props="props" @change="handle_change" />
 </template>
 
 <script>
@@ -92,7 +90,4 @@
 </script>
 
 <style>
-  .ves-selector .el-cascader {
-    width: 100%
-  }
 </style>

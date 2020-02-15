@@ -6,9 +6,14 @@
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <div v-if="$store.getters.has_aggs">
+    <div class="vuela-options" v-if="$store.getters.has_aggs">
       <div v-for="cond in conditions" :key="cond.id" style="margin-top: .25rem">
-        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" />
+        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" :style="{width: 'calc(100% - 97px)'}" />
+
+        <div class="vuela-rm-buttons">
+          <el-button type="info" plain icon="el-icon-check" />
+          <el-button type="info" plain icon="el-icon-delete" />
+        </div>
       </div>
 
       <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="add_cond">
@@ -111,9 +116,30 @@
 </script>
 
 <style>
+  .vuela-options input.el-input__inner {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
   .vuela-submit .el-button {
     margin-top: .25rem;
     margin-left: 0;
     width: 100%;
+  }
+
+  .vuela-rm-buttons {
+    display: inline-block;
+    margin-left: -4px;
+  }
+
+  .vuela-rm-buttons button:nth-child(2) {
+    margin-left: -5px;
+    width: 50px;
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+
+  .vuela-rm-buttons button:nth-child(2) i {
+    margin-left: -3px;
   }
 </style>

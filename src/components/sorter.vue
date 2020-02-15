@@ -1,8 +1,6 @@
 <template>
-  <div class='ves-selector'>
-    <el-cascader placeholder="sort" filterable clearable v-model="value" separator=": " :options="$store.getters.order_options"
-      :props="props" @change="handle_change" />
-  </div>
+  <el-cascader placeholder="sort" filterable clearable v-model="value" separator=": " :options="$store.getters.order_options"
+    :props="props" @change="handle_change" />
 </template>
 
 <script>
@@ -28,7 +26,4 @@
 </script>
 
 <style scoped>
-  .ves-selector .el-cascader {
-    width: 100%
-  }
 </style>
