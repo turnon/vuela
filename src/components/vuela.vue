@@ -6,9 +6,14 @@
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <div v-if="$store.getters.has_aggs">
-      <div v-for="cond in conditions" :key="cond.id" style="margin-top: .25rem">
-        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" />
+    <div class="vuela-options" v-if="$store.getters.has_aggs">
+      <div v-for="cond in $store.getters.conditions" :key="cond.id" style="margin-top: .25rem">
+        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" :style="{width: 'calc(100% - 97px)'}" />
+
+        <div class="vuela-rm-buttons">
+          <el-button type="info" plain icon="el-icon-check" />
+          <el-button type="info" plain icon="el-icon-delete" @click="del_cond(cond.id)" />
+        </div>
       </div>
 
       <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="add_cond">
@@ -60,7 +65,6 @@
     data() {
       return {
         new_cond: null,
-        conditions: [],
         index_type: "",
       }
     },
@@ -71,9 +75,6 @@
     },
 
     watch: {
-      "$store.state.current_index": function() {
-        this.conditions = []
-      },
       flip: function(val) {
         this.$store.dispatch('load_more')
       },
@@ -92,10 +93,10 @@
 
     methods: {
       add_cond() {
-        this.conditions.push({
-          id: Date.now().toString(),
-          operator: this.new_cond
-        })
+        this.$store.commit('add_cond', this.new_cond)
+      },
+      del_cond(id) {
+        this.$store.commit('del_cond', id)
       },
       change_cond(id, cond) {
         this.$store.commit('change_cond', {
@@ -111,9 +112,30 @@
 </script>
 
 <style>
+  .vuela-options input.el-input__inner {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
   .vuela-submit .el-button {
     margin-top: .25rem;
     margin-left: 0;
     width: 100%;
+  }
+
+  .vuela-rm-buttons {
+    display: inline-block;
+    margin-left: -4px;
+  }
+
+  .vuela-rm-buttons button:nth-child(2) {
+    margin-left: -5px;
+    width: 50px;
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+
+  .vuela-rm-buttons button:nth-child(2) i {
+    margin-left: -3px;
   }
 </style>

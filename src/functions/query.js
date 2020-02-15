@@ -3,6 +3,10 @@ class Query {
     this.conditions = {}
   }
 
+  del(id) {
+    delete this.conditions[id]
+  }
+
   put(id, cond) {
     this.conditions[id] = cond
     console.log(JSON.stringify(this.conditions))

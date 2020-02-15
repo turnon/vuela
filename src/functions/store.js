@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import load_mappings from './mapping.js'
-import Query from './query.js'
-import Sort from './sort.js'
+import ReqBody from './req_body.js'
 
 Vue.use(Vuex)
 
@@ -35,8 +34,7 @@ export default new Vuex.Store({
     name_indexes: {},
     current_index: null,
     alarm: null,
-    query: null,
-    sort: null,
+    req_body: null,
     aggs: [],
     simple_scroll_id: 0,
     hits: {}
@@ -45,6 +43,9 @@ export default new Vuex.Store({
   getters: {
     index_names(state) {
       return Object.keys(state.name_indexes).sort()
+    },
+    conditions(state) {
+      return state.req_body.conditions
     },
     order_options(state) {
       return state.current_index ? state.current_index.order_options() : []
@@ -67,8 +68,16 @@ export default new Vuex.Store({
       }
     },
 
+    add_cond(state, cond_type) {
+      state.req_body.add(cond_type)
+    },
+
+    del_cond(state, id) {
+      state.req_body.del(id)
+    },
+
     change_cond(state, cond) {
-      state[cond.type].put(cond.id, cond.cond)
+      state.req_body.put(cond)
     },
   },
 
@@ -91,8 +100,7 @@ export default new Vuex.Store({
       let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
         alarm: null,
-        query: new Query(),
-        sort: new Sort(),
+        req_body: new ReqBody(),
         aggs: [],
         hits: {},
         current_index: idx
@@ -113,10 +121,7 @@ export default new Vuex.Store({
 
     submit(ctx) {
       let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
-        body = {
-          query: ctx.state.query.to_json(),
-          sort: ctx.state.sort.to_json()
-        }
+        body = ctx.state.req_body.to_json()
 
       scroll(ctx, (idx) => {
         ctx.commit('refresh', {
