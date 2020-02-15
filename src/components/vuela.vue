@@ -8,15 +8,15 @@
 
     <div class="vuela-options" v-if="$store.getters.has_aggs">
       <div v-for="cond in $store.getters.conditions" :key="cond.id" style="margin-top: .25rem">
-        <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" :style="{width: 'calc(100% - 97px)'}" />
+        <component :is="cond.operator" @change_cond="change_cond('put', {id: cond.id, ...$event})" :style="{width: 'calc(100% - 97px)'}" />
 
         <div class="vuela-rm-buttons">
           <el-button type="info" plain icon="el-icon-check" />
-          <el-button type="info" plain icon="el-icon-delete" @click="del_cond(cond.id)" />
+          <el-button type="info" plain icon="el-icon-delete" @click="change_cond('del', cond.id)" />
         </div>
       </div>
 
-      <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="add_cond">
+      <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="change_cond('add', $event)">
         <el-option v-for="cond in ['match_phrase', 'terms', 'sorter',]" :key="cond" :label="cond" :value="cond" />
       </el-select>
     </div>
@@ -92,17 +92,8 @@
     },
 
     methods: {
-      add_cond() {
-        this.$store.commit('add_cond', this.new_cond)
-      },
-      del_cond(id) {
-        this.$store.commit('del_cond', id)
-      },
-      change_cond(id, cond) {
-        this.$store.commit('change_cond', {
-          id,
-          ...cond
-        })
+      change_cond(change, ...args) {
+        this.$store.state.req_body[change](...args)
       },
       change_index() {
         this.$store.dispatch('change_index', this.index_type)

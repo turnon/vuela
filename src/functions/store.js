@@ -67,18 +67,6 @@ export default new Vuex.Store({
         state[key] = new_state[key]
       }
     },
-
-    add_cond(state, cond_type) {
-      state.req_body.add(cond_type)
-    },
-
-    del_cond(state, id) {
-      state.req_body.del(id)
-    },
-
-    change_cond(state, cond) {
-      state.req_body.put(cond)
-    },
   },
 
   actions: {
