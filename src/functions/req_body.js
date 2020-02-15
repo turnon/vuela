@@ -3,8 +3,25 @@ import Sort from './sort.js'
 
 class ReqBody {
   constructor() {
+    this.conditions = []
     this.query = new Query()
     this.sort = new Sort()
+  }
+
+  add(cond_type) {
+    this.conditions.push({
+      id: Date.now().toString(),
+      operator: cond_type
+    })
+  }
+
+  del(id) {
+    this.conditions = this.conditions.filter(cond => {
+      return cond.id !== id
+    })
+    this.each_sub_body((_, body) => {
+      body.del(id)
+    })
   }
 
   put(cond) {
@@ -13,10 +30,16 @@ class ReqBody {
 
   to_json() {
     let json = {}
-    for (let attr of ['query', 'sort']) {
-      json[attr] = this[attr].to_json()
-    }
+    this.each_sub_body((attr, body) => {
+      json[attr] = body.to_json()
+    })
     return json
+  }
+
+  each_sub_body(fn) {
+    for (let attr of ['query', 'sort']) {
+      fn(attr, this[attr])
+    }
   }
 }
 

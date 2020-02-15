@@ -44,6 +44,9 @@ export default new Vuex.Store({
     index_names(state) {
       return Object.keys(state.name_indexes).sort()
     },
+    conditions(state) {
+      return state.req_body.conditions
+    },
     order_options(state) {
       return state.current_index ? state.current_index.order_options() : []
     },
@@ -63,6 +66,14 @@ export default new Vuex.Store({
       for (let key in new_state) {
         state[key] = new_state[key]
       }
+    },
+
+    add_cond(state, cond_type) {
+      state.req_body.add(cond_type)
+    },
+
+    del_cond(state, id) {
+      state.req_body.del(id)
     },
 
     change_cond(state, cond) {

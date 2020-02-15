@@ -10,6 +10,10 @@ class Sort {
     console.log(JSON.stringify(this.to_json()))
   }
 
+  del(id) {
+    delete this.sortors[id]
+  }
+
   to_json() {
     let arr = this.seq.reduce((result, id) => {
       let sortor = this.sortors[id]

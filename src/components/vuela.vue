@@ -7,12 +7,12 @@
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
     <div class="vuela-options" v-if="$store.getters.has_aggs">
-      <div v-for="cond in conditions" :key="cond.id" style="margin-top: .25rem">
+      <div v-for="cond in $store.getters.conditions" :key="cond.id" style="margin-top: .25rem">
         <component :is="cond.operator" @change_cond="change_cond(cond.id, $event)" :style="{width: 'calc(100% - 97px)'}" />
 
         <div class="vuela-rm-buttons">
           <el-button type="info" plain icon="el-icon-check" />
-          <el-button type="info" plain icon="el-icon-delete" />
+          <el-button type="info" plain icon="el-icon-delete" @click="del_cond(cond.id)" />
         </div>
       </div>
 
@@ -65,7 +65,6 @@
     data() {
       return {
         new_cond: null,
-        conditions: [],
         index_type: "",
       }
     },
@@ -76,9 +75,6 @@
     },
 
     watch: {
-      "$store.state.current_index": function() {
-        this.conditions = []
-      },
       flip: function(val) {
         this.$store.dispatch('load_more')
       },
@@ -97,10 +93,10 @@
 
     methods: {
       add_cond() {
-        this.conditions.push({
-          id: Date.now().toString(),
-          operator: this.new_cond
-        })
+        this.$store.commit('add_cond', this.new_cond)
+      },
+      del_cond(id) {
+        this.$store.commit('del_cond', id)
       },
       change_cond(id, cond) {
         this.$store.commit('change_cond', {
