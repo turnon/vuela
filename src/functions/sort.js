@@ -10,6 +10,10 @@ class Sort {
     console.log(JSON.stringify(this.to_json()))
   }
 
+  anti(id) {
+
+  }
+
   del(id) {
     delete this.sortors[id]
   }

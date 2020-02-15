@@ -4,6 +4,7 @@ import Sort from './sort.js'
 class ReqBody {
   constructor() {
     this.conditions = []
+    this.antis = {}
     this.query = new Query()
     this.sort = new Sort()
   }
@@ -21,6 +22,13 @@ class ReqBody {
     })
     this.each_sub_body((_, body) => {
       body.del(id)
+    })
+  }
+
+  anti(id) {
+    this.antis[id] = !this.antis[id]
+    this.each_sub_body((_, body) => {
+      body.anti(id)
     })
   }
 
