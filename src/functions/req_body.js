@@ -33,10 +33,6 @@ class ReqBody {
     })
   }
 
-  is_anti(id) {
-    return this.antis[id] === true
-  }
-
   put(cond) {
     this[cond.type].put(cond.id, cond.cond)
   }

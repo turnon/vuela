@@ -47,6 +47,11 @@ export default new Vuex.Store({
     conditions(state) {
       return state.req_body.conditions
     },
+    anti_icon: (state) => (cond) => {
+      let anti = state.req_body.antis[cond.id] ? 0 : 1,
+        icons = cond.operator === 'sort' ? ['el-icon-bottom', 'el-icon-top'] : ['el-icon-close', 'el-icon-check']
+      return icons[anti]
+    },
     order_options(state) {
       return state.current_index ? state.current_index.order_options() : []
     },
