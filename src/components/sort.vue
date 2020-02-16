@@ -1,6 +1,7 @@
 <template>
-  <el-cascader placeholder="sort" filterable clearable v-model="value" separator=": " :options="$store.getters.order_options"
-    :props="props" @change="handle_change" />
+  <el-select v-model="value" filterable placeholder="sort" @change="handle_change">
+    <el-option v-for="item in $store.getters.order_options" :key="item" :label="item" :value="item" />
+  </el-select>
 </template>
 
 <script>
@@ -10,7 +11,7 @@
         props: {
           expandTrigger: 'hover'
         },
-        value: []
+        value: "_doc"
       }
     },
 
@@ -18,7 +19,7 @@
       handle_change() {
         this.$emit('change_cond', {
           type: 'sort',
-          cond: this.value[1]
+          cond: this.value
         })
       }
     }

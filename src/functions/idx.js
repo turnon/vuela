@@ -78,22 +78,7 @@ class Idx {
   }
 
   order_options() {
-    return this.prop_list().sort().map(p => {
-      return {
-        label: p,
-        children: [{
-          label: 'asc',
-          value: {
-            [p]: 'asc'
-          }
-        }, {
-          label: 'desc',
-          value: {
-            [p]: 'desc'
-          }
-        }]
-      }
-    })
+    return ['_id'].concat(this.prop_list()).sort()
   }
 
   aggs_body() {
