@@ -8,9 +8,6 @@
   export default {
     data() {
       return {
-        props: {
-          expandTrigger: 'hover'
-        },
         value: "_doc"
       }
     },

@@ -6,9 +6,8 @@ class Sort {
   }
 
   put(id, sortor) {
+    if (!this.sortors[id]) this.seq.push(id)
     this.sortors[id] = sortor
-    this.seq.push(id)
-    console.log(JSON.stringify(this.to_json()))
   }
 
   anti(id) {
