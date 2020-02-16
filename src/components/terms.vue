@@ -1,5 +1,5 @@
 <template>
-  <el-cascader placeholder="terms" filterable v-model="included" :options="$store.state.aggs" :props="props" @change="handle_change" />
+  <el-cascader placeholder="terms" filterable v-model="included" :options="options" :props="props" @change="handle_change" />
 </template>
 
 <script>
@@ -66,6 +66,27 @@
     return conditions
   }
 
+  function merge_excluded(aggs, keep) {
+    for (let k of keep) {
+      let field_index = aggs.findIndex((field) => {
+          return field.label === k.field
+        }),
+        children = aggs[field_index].children,
+        value_index = children.findIndex((value) => {
+          return value.key === k.value
+        })
+
+      if (value_index < 0) {
+        children.push({
+          key: k.value,
+          label: `${k.value}(0)`,
+          value: k
+        })
+      }
+    }
+    return aggs
+  }
+
   export default {
     data() {
       return {
@@ -74,12 +95,20 @@
           multiple: true
         },
         included: [],
+        keep: [],
+      }
+    },
+
+    computed: {
+      options() {
+        return merge_excluded(this.$store.state.aggs, this.keep)
       }
     },
 
     methods: {
       handle_change() {
-        let terms = reduce_to_terms(this.included.map(arr => arr[1]))
+        this.keep = this.included.map(arr => arr[1])
+        let terms = reduce_to_terms(this.keep)
         this.$emit("change_cond", {
           type: 'query',
           cond: terms

@@ -11,13 +11,13 @@
         <component :is="cond.operator" @change_cond="change_cond('put', {id: cond.id, ...$event})" :style="{width: 'calc(100% - 97px)'}" />
 
         <div class="vuela-rm-buttons">
-          <el-button type="info" plain icon="el-icon-check" />
+          <el-button type="info" plain :icon="$store.getters.anti_icon(cond)" @click="change_cond('anti', cond.id)" />
           <el-button type="info" plain icon="el-icon-delete" @click="change_cond('del', cond.id)" />
         </div>
       </div>
 
       <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="change_cond('add', $event)">
-        <el-option v-for="cond in ['match_phrase', 'terms', 'sorter',]" :key="cond" :label="cond" :value="cond" />
+        <el-option v-for="cond in ['match_phrase', 'terms', 'sort',]" :key="cond" :label="cond" :value="cond" />
       </el-select>
     </div>
 
@@ -41,7 +41,7 @@
 
   import terms from './terms.vue'
   import match_phrase from './match_phrase.vue'
-  import sorter from './sorter.vue'
+  import sort from './sort.vue'
   import store from '../functions/store.js'
 
   Vue.use(Input)
@@ -71,7 +71,7 @@
     components: {
       match_phrase,
       terms,
-      sorter
+      sort
     },
 
     watch: {
