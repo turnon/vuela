@@ -27,9 +27,14 @@ class ReqBody {
 
   anti(id) {
     this.antis[id] = !this.antis[id]
+    this.antis = JSON.parse(JSON.stringify(this.antis))
     this.each_sub_body((_, body) => {
       body.anti(id)
     })
+  }
+
+  is_anti(id) {
+    return this.antis[id] === true
   }
 
   put(cond) {

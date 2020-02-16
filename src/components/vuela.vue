@@ -11,7 +11,8 @@
         <component :is="cond.operator" @change_cond="change_cond('put', {id: cond.id, ...$event})" :style="{width: 'calc(100% - 97px)'}" />
 
         <div class="vuela-rm-buttons">
-          <el-button type="info" plain icon="el-icon-check" @click="change_cond('anti', cond.id)" />
+          <el-button type="info" plain :icon="$store.state.req_body.is_anti(cond.id) ? 'el-icon-close' : 'el-icon-check'"
+            @click="change_cond('anti', cond.id)" />
           <el-button type="info" plain icon="el-icon-delete" @click="change_cond('del', cond.id)" />
         </div>
       </div>
