@@ -6,28 +6,7 @@
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <div class="vuela-options" v-if="$store.getters.has_aggs">
-      <div v-for="cond in $store.getters.conditions" :key="cond.id" style="margin-top: .25rem">
-        <component :is="cond.operator" @change_cond="change_cond('put', {id: cond.id, ...$event})" :style="{width: 'calc(100% - 97px)'}" />
-
-        <div class="vuela-rm-buttons">
-          <el-button type="info" plain :icon="$store.getters.anti_icon(cond)" @click="change_cond('anti', cond.id)" />
-          <el-button type="info" plain icon="el-icon-delete" @click="change_cond('del', cond.id)" />
-        </div>
-      </div>
-
-      <el-dropdown class="add-condition" placement="bottom-start" @command="change_cond('add', $event)">
-        <el-button type="primary" plain>
-          add condition <i class="el-icon-plus el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="cond in ['match_phrase', 'terms', 'sort',]" :command="cond">
-            {{ cond }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-
-    </div>
+    <conditionslist v-if="$store.getters.has_aggs" />
 
     <div class="vuela-submit" v-if="$store.getters.has_aggs">
       <el-button type="success" plain @click="$store.dispatch('submit')">submit</el-button>
@@ -50,9 +29,7 @@
   } from 'element-ui'
   import 'element-ui/lib/theme-chalk/index.css';
 
-  import terms from './terms.vue'
-  import match_phrase from './match_phrase.vue'
-  import sort from './sort.vue'
+  import conditionslist from './conditions_list.vue'
   import store from '../functions/store.js'
 
   Vue.use(Input)
@@ -83,9 +60,7 @@
       }
     },
     components: {
-      match_phrase,
-      terms,
-      sort
+      conditionslist
     },
 
     watch: {
@@ -106,9 +81,6 @@
     },
 
     methods: {
-      change_cond(change, ...args) {
-        this.$store.state.req_body[change](...args)
-      },
       change_index() {
         this.$store.dispatch('change_index', this.index_type)
       },
@@ -117,39 +89,9 @@
 </script>
 
 <style>
-  .vuela-options input.el-input__inner {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
-
   .vuela-submit .el-button {
     margin-top: .25rem;
     margin-left: 0;
     width: 100%;
-  }
-
-  .add-condition {
-    width: 100%;
-    margin-top: .25rem
-  }
-
-  .add-condition .el-button {
-    width: 100%;
-  }
-
-  .vuela-rm-buttons {
-    display: inline-block;
-    margin-left: -4px;
-  }
-
-  .vuela-rm-buttons button:nth-child(2) {
-    margin-left: -5px;
-    width: 50px;
-    border-bottom-left-radius: 0px;
-    border-top-left-radius: 0px;
-  }
-
-  .vuela-rm-buttons button:nth-child(2) i {
-    margin-left: -3px;
   }
 </style>
