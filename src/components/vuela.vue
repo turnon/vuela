@@ -16,13 +16,21 @@
         </div>
       </div>
 
-      <el-select v-model="new_cond" placeholder="add condition" style="width: 100%; margin-top: .25rem" @change="change_cond('add', $event)">
-        <el-option v-for="cond in ['match_phrase', 'terms', 'sort',]" :key="cond" :label="cond" :value="cond" />
-      </el-select>
+      <el-dropdown class="add-condition" placement="bottom-start" @command="change_cond('add', $event)">
+        <el-button type="primary" plain>
+          add condition <i class="el-icon-plus el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-for="cond in ['match_phrase', 'terms', 'sort',]" :command="cond">
+            {{ cond }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
     </div>
 
     <div class="vuela-submit" v-if="$store.getters.has_aggs">
-      <el-button type="primary" plain @click="$store.dispatch('submit')">submit</el-button>
+      <el-button type="success" plain @click="$store.dispatch('submit')">submit</el-button>
     </div>
   </div>
 </template>
@@ -35,6 +43,9 @@
     Select,
     Option,
     Button,
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
     Alert
   } from 'element-ui'
   import 'element-ui/lib/theme-chalk/index.css';
@@ -48,6 +59,9 @@
   Vue.use(Select)
   Vue.use(Option)
   Vue.use(Button)
+  Vue.use(Dropdown)
+  Vue.use(DropdownMenu)
+  Vue.use(DropdownItem)
   Vue.use(Alert)
 
   function replace_or_append(component, result_attr) {
@@ -111,6 +125,15 @@
   .vuela-submit .el-button {
     margin-top: .25rem;
     margin-left: 0;
+    width: 100%;
+  }
+
+  .add-condition {
+    width: 100%;
+    margin-top: .25rem
+  }
+
+  .add-condition .el-button {
     width: 100%;
   }
 
