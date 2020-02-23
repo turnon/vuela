@@ -6,14 +6,10 @@
 
     <el-alert type="error" style="margin-top: .5rem" :title="$store.state.alarm" :closable="false" v-show="$store.getters.has_alarm" />
 
-    <matcher style="margin-top: .25rem" v-if="$store.getters.has_aggs" />
-
-    <selector style="margin-top: .25rem" v-if="$store.getters.has_aggs" />
-
-    <sorter style="margin-top: .25rem" />
+    <conditionslist v-if="$store.getters.has_aggs" />
 
     <div class="vuela-submit" v-if="$store.getters.has_aggs">
-      <el-button type="primary" plain @click="$store.dispatch('submit')">submit</el-button>
+      <el-button type="success" plain @click="$store.dispatch('submit')">submit</el-button>
     </div>
   </div>
 </template>
@@ -26,19 +22,23 @@
     Select,
     Option,
     Button,
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
     Alert
   } from 'element-ui'
   import 'element-ui/lib/theme-chalk/index.css';
 
-  import selector from './selector.vue'
-  import matcher from './matcher.vue'
-  import sorter from './sorter.vue'
+  import conditionslist from './conditions_list.vue'
   import store from '../functions/store.js'
 
   Vue.use(Input)
   Vue.use(Select)
   Vue.use(Option)
   Vue.use(Button)
+  Vue.use(Dropdown)
+  Vue.use(DropdownMenu)
+  Vue.use(DropdownItem)
   Vue.use(Alert)
 
   function replace_or_append(component, result_attr) {
@@ -55,13 +55,12 @@
     props: ["options", "flip"],
     data() {
       return {
+        new_cond: null,
         index_type: "",
       }
     },
     components: {
-      matcher,
-      selector,
-      sorter
+      conditionslist
     },
 
     watch: {
@@ -90,10 +89,6 @@
 </script>
 
 <style>
-  .ves-selector .el-select {
-    width: 100%
-  }
-
   .vuela-submit .el-button {
     margin-top: .25rem;
     margin-left: 0;

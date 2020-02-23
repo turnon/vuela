@@ -1,54 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import load_mappings from './mapping.js'
+import ReqBody from './req_body.js'
 
 Vue.use(Vuex)
 
 function handle_err(err) {
   console.error(err)
   return err.response ? JSON.stringify(err.response) : err
-}
-
-function construct_conditions(options) {
-  if (!options) {
-    return []
-  }
-
-  let group_by_field = options.reduce((group_by_field, node) => {
-    let group = group_by_field[node.field] || [];
-    group.push(node.value);
-    group_by_field[node.field] = group;
-    return group_by_field
-  }, {})
-
-
-  let conditions = []
-  for (let field in group_by_field) {
-    let values = group_by_field[field]
-    let condition = {
-      terms: {
-        [field]: values
-      }
-    }
-    conditions.push(condition)
-  }
-
-  return conditions
-}
-
-function construct_query_body(cond) {
-  let must = construct_conditions(cond.picked.included)
-  if (cond.match) must.push(cond.match)
-  return {
-    bool: {
-      filter: [{
-        bool: {
-          must: must,
-          must_not: construct_conditions(cond.picked.excluded)
-        }
-      }]
-    }
-  }
 }
 
 function scroll(ctx, scroll_fn) {
@@ -75,9 +34,7 @@ export default new Vuex.Store({
     name_indexes: {},
     current_index: null,
     alarm: null,
-    match: null,
-    picked: {},
-    sort: [],
+    req_body: null,
     aggs: [],
     simple_scroll_id: 0,
     hits: {}
@@ -86,6 +43,14 @@ export default new Vuex.Store({
   getters: {
     index_names(state) {
       return Object.keys(state.name_indexes).sort()
+    },
+    conditions(state) {
+      return state.req_body.conditions
+    },
+    anti_icon: (state) => (cond) => {
+      let anti = state.req_body.antis[cond.id] ? 0 : 1,
+        icons = cond.operator === 'sort' ? ['el-icon-bottom', 'el-icon-top'] : ['el-icon-close', 'el-icon-check']
+      return icons[anti]
     },
     order_options(state) {
       return state.current_index ? state.current_index.order_options() : []
@@ -106,10 +71,6 @@ export default new Vuex.Store({
       for (let key in new_state) {
         state[key] = new_state[key]
       }
-    },
-
-    pick(state, nodes) {
-      state.picked = nodes
     },
   },
 
@@ -132,8 +93,7 @@ export default new Vuex.Store({
       let idx = ctx.state.name_indexes[index]
       ctx.commit('refresh', {
         alarm: null,
-        picked: {},
-        sort: [],
+        req_body: new ReqBody(),
         aggs: [],
         hits: {},
         current_index: idx
@@ -154,14 +114,7 @@ export default new Vuex.Store({
 
     submit(ctx) {
       let new_simple_scroll_id = ctx.state.simple_scroll_id + 1,
-        cond = {
-          picked: ctx.state.picked,
-          match: ctx.state.match
-        },
-        body = {
-          query: construct_query_body(cond),
-          sort: ctx.state.sort
-        }
+        body = ctx.state.req_body.to_json()
 
       scroll(ctx, (idx) => {
         ctx.commit('refresh', {
