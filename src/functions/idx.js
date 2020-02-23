@@ -1,5 +1,7 @@
 import axios from "axios"
 
+const scroll_alive = "1m"
+
 class AggsMaker {
   constructor(options) {
     this.options = options
@@ -59,6 +61,26 @@ class Idx {
     this.aggs_maker = new AggsMaker(this.options)
   }
 
+  namaspaced_path(path) {
+    return this.options.namespace ? `/${this.options.namespace}${path}` : path
+  }
+
+  prop_list() {
+    return Object.keys(this.props)
+  }
+
+  text_options() {
+    let fields = []
+    for (let field in this.props)
+      if (this.props[field].type === 'text')
+        fields.push(field)
+    return fields.sort()
+  }
+
+  order_options() {
+    return ['_id'].concat(this.prop_list()).sort()
+  }
+
   aggs_body() {
     if (!this._aggs_body) {
       this._aggs_body = this.aggs_maker.make_aggs(this.props)
@@ -66,11 +88,13 @@ class Idx {
     return this._aggs_body
   }
 
-  async aggs_result() {
-    let result = await this.basic_search()
+  hits() {
+    return this.resp.hits
+  }
 
+  aggs_result() {
     let new_aggs = [],
-      aggs = result.data["aggregations"]
+      aggs = this.resp.aggregations
 
     for (let field in aggs) {
       let values = aggs[field]["buckets"].map(b => {
@@ -90,23 +114,36 @@ class Idx {
     return new_aggs
   }
 
-  async search(query) {
-    return await this.basic_search({
-      query
+  statistic() {
+    return this.request(`/${this.index_type}/_search`, {
+      size: 0,
+      aggs: this.aggs_body()
     })
   }
 
-  async basic_search(more) {
+  scroll_init(more) {
     let q = {
       aggs: this.aggs_body()
     }
-    if (more) {
-      Object.assign(q, more)
-    }
-    let path = `/${this.index_type}/_search`
-    path = this.options.namespace ? `/${this.options.namespace}${path}` : path
-    return await axios.post(path, q)
+    Object.assign(q, more)
+    q.sort = q.sort.length ? q.sort : ["_doc"]
+    return this.request(`/${this.index_type}/_search?scroll=${scroll_alive}`, q)
   }
+
+  scroll_next() {
+    return this.request("/_search/scroll", {
+      scroll: scroll_alive,
+      scroll_id: this.resp["_scroll_id"]
+    })
+  }
+
+  async request(path, q) {
+    path = this.namaspaced_path(path)
+    let resp = await axios.post(path, q)
+    this.resp = resp.data
+    return Promise.resolve(this)
+  }
+
 }
 
 export default Idx
