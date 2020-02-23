@@ -1,29 +1,55 @@
-# default
+# vuela
 
-## Project setup
-```
-npm install
-```
+A Vue form to query ElasticSearch
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Usage
 
-### Compiles and minifies for production
 ```
-npm run build
-```
+<template>
+  <div id="app">
+    <vuela :options="{aggs_keyword_size: 50}" :flip="page" @result="handle_result" />
+    <button @click='load_more'>load more</button>
 
-### Run your tests
-```
-npm run test
-```
+    <div v-if="result">
+      <p>scollr_id: {{ result.simple_scroll_id }}</p>
+      <p>total: {{ result.hits.total }}</p>
+      <ul>
+        <li v-for="hit in result.hits.hits" :key="hit._id">
+          {{ hit }}
+        </li>
+      </ul>
+    </div>
 
-### Lints and fixes files
-```
-npm run lint
-```
+  </div>
+</template>
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+<script>
+  import vuela from '@ken_yuan/vuela'
+  import '@ken_yuan/vuela/dist/vuela.css'
+
+  function flip() {
+    return Object.create(null)
+  }
+
+  export default {
+    name: 'app',
+    components: {
+      vuela
+    },
+    data() {
+      return {
+        result: null,
+        page: flip()
+      }
+    },
+    methods: {
+      load_more() {
+        this.page = flip()
+      },
+      handle_result(res) {
+        res.replace_or_append(this, 'result')
+      }
+    }
+  }
+</script>
+```
